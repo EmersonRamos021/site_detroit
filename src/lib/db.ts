@@ -10,7 +10,7 @@ const globalForDb = globalThis as unknown as {
   mysqlPool: mysql.Pool | undefined;
 };
 
-function getPool(): mysql.Pool {
+export function getPool(): mysql.Pool {
   if (globalForDb.mysqlPool) {
     return globalForDb.mysqlPool;
   }

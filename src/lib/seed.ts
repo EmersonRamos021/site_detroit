@@ -1,4 +1,4 @@
-import { pool } from "./db";
+import { getPool } from "./db";
 
 /**
  * Cria as tabelas `categories` e `products` se não existirem,
@@ -8,7 +8,7 @@ import { pool } from "./db";
  * (settings, counters, reports) — não há conflito.
  */
 export async function runSeed() {
-  const db = pool;
+  const db = getPool();
 
   // ═══════════════════════════════════════
   // TABELA: categories

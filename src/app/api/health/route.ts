@@ -1,11 +1,11 @@
-import { pool } from "@/lib/db";
+import { getPool } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const connection = await pool.getConnection();
+    const connection = await getPool().getConnection();
     connection.release();
     
     return NextResponse.json({
