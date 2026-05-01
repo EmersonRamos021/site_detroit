@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-detroit-red: #E50914;
+  --color-detroit-red-hover: #b80710;
+  
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  body {
+    background-color: theme('color.zinc.950');
+    color: theme('color.zinc.50');
+    font-family: theme('font.sans');
+  }
+
+  /* Taste-skill specific liquid glass utilities / Scrollbar hide */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply relative bg-zinc-900/50 backdrop-blur-xl border border-white/5;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+}
