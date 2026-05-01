@@ -34,6 +34,11 @@ export async function createPixPayment({
 
   const now = new Date();
   const expiration = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutos
+  
+  // Mercado Pago exige formato ISO 8601 com offset explícito (ex: -03:00)
+  // Subtraímos 3 horas do UTC para pegar o tempo em Brasília
+  const spTime = new Date(expiration.getTime() - 3 * 60 * 60 * 1000);
+  const dateOfExpiration = spTime.toISOString().replace("Z", "-03:00");
 
   const result = await payment.create({
     body: {
@@ -43,7 +48,6 @@ export async function createPixPayment({
       payer: {
         email: payerEmail,
       },
-      date_of_expiration: expiration.toISOString(),
       external_reference: externalReference,
     },
     requestOptions: {

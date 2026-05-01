@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       [session.user.discord_id]
     );
 
-    const payerEmail = users[0]?.email || `${session.user.discord_id}@detroit.rp`;
+    const payerEmail = users[0]?.email || `discord_${session.user.discord_id}@detroitroleplay.com`;
 
     // Criar pagamento PIX no Mercado Pago
     const pixData = await createPixPayment({
