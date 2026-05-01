@@ -69,20 +69,13 @@ export function BuyButton({ productId, productTitle, price }: BuyButtonProps) {
         throw new Error(data.error || "Erro ao criar pedido");
       }
 
-      setMessage({
-        type: "success",
-        text: `✅ Pedido ${data.order.code} criado! Acesse "Meus Pedidos" para acompanhar.`,
-      });
-      
-      // Limpa após criar
-      setDiscountInfo(null);
-      setCouponCode("");
+      // Redirecionar para o checkout PIX
+      router.push(`/checkout/${data.order.code}`);
     } catch (err) {
       setMessage({
         type: "error",
         text: err instanceof Error ? err.message : "Erro desconhecido",
       });
-    } finally {
       setLoading(false);
     }
   }

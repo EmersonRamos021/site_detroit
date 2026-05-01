@@ -141,11 +141,19 @@ export default function OrdersPage() {
                       </p>
                     </div>
 
-                    {/* Price */}
-                    <div className="text-right flex-shrink-0">
+                    {/* Price + Pay Button */}
+                    <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
                       <span className="text-lg font-mono font-bold text-white">
                         R$ {Number(order.price).toFixed(2)}
                       </span>
+                      {order.status === "pendente" && (
+                        <Link
+                          href={`/checkout/${order.code}`}
+                          className="px-4 py-1.5 rounded-full bg-[var(--color-detroit-red)] text-white text-xs font-bold hover:bg-[var(--color-detroit-red-hover)] transition-all"
+                        >
+                          Pagar PIX
+                        </Link>
+                      )}
                     </div>
                   </motion.div>
                 );

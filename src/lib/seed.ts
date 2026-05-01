@@ -76,6 +76,7 @@ export async function runSeed() {
       discount DECIMAL(10,2) DEFAULT 0,
       price DECIMAL(10,2) NOT NULL,
       coupon_code VARCHAR(50) DEFAULT NULL,
+      mp_payment_id BIGINT DEFAULT NULL,
       expires_at TIMESTAMP NULL DEFAULT NULL,
       expiry_notified BOOLEAN DEFAULT FALSE,
       vip_days INT DEFAULT 30,
@@ -98,6 +99,14 @@ export async function runSeed() {
     console.log("✅ Colunas de VIP adicionadas à tabela orders.");
   } catch {
     // Colunas já existem — ignorar o erro
+  }
+
+  // Migração: adicionar coluna mp_payment_id para Mercado Pago
+  try {
+    await db.execute(`ALTER TABLE orders ADD COLUMN mp_payment_id BIGINT DEFAULT NULL`);
+    console.log("✅ Coluna mp_payment_id adicionada à tabela orders.");
+  } catch {
+    // Coluna já existe — ignorar o erro
   }
 
   // ═══════════════════════════════════════
