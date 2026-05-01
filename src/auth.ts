@@ -12,6 +12,7 @@ interface DbUser {
 const ADMIN_DISCORD_IDS = (process.env.ADMIN_DISCORD_IDS || "303184113639358464").split(",");
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Discord({
       clientId: process.env.AUTH_DISCORD_ID,
