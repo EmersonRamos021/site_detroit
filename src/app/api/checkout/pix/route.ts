@@ -104,10 +104,19 @@ export async function POST(request: Request) {
         product: order.product_title,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Erro ao criar PIX:", error);
+    
+    // Tenta extrair a mensagem de erro do Mercado Pago
+    let mpError = "Erro interno ao gerar pagamento PIX.";
+    if (error.cause && error.cause.length > 0) {
+      mpError = `Erro Mercado Pago: ${error.cause[0].description}`;
+    } else if (error.message) {
+      mpError = `Erro: ${error.message}`;
+    }
+
     return Response.json(
-      { error: "Erro interno ao gerar pagamento PIX." },
+      { error: mpError },
       { status: 500 }
     );
   }
