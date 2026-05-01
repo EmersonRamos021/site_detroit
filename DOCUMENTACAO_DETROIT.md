@@ -1,76 +1,107 @@
-# 🚀 Detroit Roleplay - Documentação Oficial
+# 🚀 Detroit Roleplay - Documentação Completa do Ecossistema
 
-Bem-vindo à documentação do ecossistema **Detroit Roleplay**. O projeto é dividido em três frentes principais:
-1. **Site Principal (Loja):** Onde os jogadores acessam, fazem login via Discord e realizam a compra de VIPs/Produtos via PIX.
-2. **Painel Admin:** Painel exclusivo para administradores controlarem pedidos, produtos, cupons, financeiro e IDs in-game.
-3. **Bot Discord:** Bot automatizado que entrega os cargos, lida com logs e controla vencimentos.
+Bem-vindo à documentação oficial arquitetural do **Detroit Roleplay**. Este documento explica detalhadamente como todo o ecossistema funciona, desde o banco de dados até a comunicação entre o site e o Discord.
 
 ---
 
-## 🛠️ Como Mudar as Credenciais do Mercado Pago
+## 🏛️ 1. Visão Geral da Arquitetura
 
-O site utiliza a API do Mercado Pago para gerar **QR Codes (PIX)** automaticamente e processar o pagamento do jogador em tempo real.
+O projeto foi construído dividindo as responsabilidades em 3 sistemas principais que se conectam ao mesmo banco de dados MySQL:
 
-### Passos para atualizar as chaves de PIX:
+1. **Site Principal (Loja):** Focado na experiência do jogador. Autenticação rápida via Discord, visualização de produtos, uso de cupons de desconto e geração de pagamentos PIX automatizados.
+2. **Painel Admin (Dashboard):** Focado na gestão da equipe. Permite criar novos produtos, controlar e alterar status de pedidos manualmente, gerenciar cupons, listar histórico de compras financeiro e coordenar IDs/Camarotes in-game.
+3. **Bot do Discord:** Focado em utilidade e interação. Responsável por mandar DMs com confirmações de compra, entregar os benefícios (cargos VIP) quando uma compra é aprovada, postar logs de sistema e checar diariamente se algum VIP venceu para removê-lo.
+
+### 🛠️ Stack Tecnológico
+- **Frontend e Backend (Site & Admin):** React, Next.js (App Router), TypeScript, TailwindCSS.
+- **Autenticação:** NextAuth.js (v5) com provider OAuth do Discord.
+- **Banco de Dados:** MySQL2 puro (sem ORM pesado, usando queries limpas e preparadas para máxima performance).
+- **Bot:** Discord.js, Node.js puro.
+- **Hospedagem:** SquareCloud.
+
+---
+
+## 💾 2. Estrutura do Banco de Dados (Schema)
+
+Todos os três serviços consultam o mesmo banco de dados. As tabelas principais são:
+
+- `users`: Armazena os jogadores que logaram no site (Discord ID, Tag, Avatar, Email).
+- `products`: Catálogo da loja (Título, Preço, Descrição, URL da Imagem, ID do Cargo Discord vinculado).
+- `coupons`: Sistema de cupons de desconto (Código, % de Desconto, Limite de Usos).
+- `orders`: O "coração" do sistema. Guarda todos os pedidos gerados.
+  - Campos vitais: `status` (pendente, pago, entregue, cancelado), `price` (preço final), `mp_payment_id` (ID do PIX no Mercado Pago), `expires_at` (Data limite do VIP).
+
+> O banco de dados foi construído com a abordagem "Lazy Initialization", conectando apenas quando necessário para poupar conexões da hospedagem.
+
+---
+
+## 🔄 3. O Fluxo de Compra (Passo a Passo)
+
+Como a mágica acontece desde o clique no site até a entrega do cargo no Discord:
+
+1. **Geração do Pedido:** O usuário logado clica em "Comprar". O site insere uma linha na tabela `orders` como `pendente`.
+2. **Geração do PIX:** O site manda os dados para a API do **Mercado Pago**, que devolve um QR Code e um código "Copia e Cola". O usuário tem 30 minutos para pagar.
+3. **Pagamento e Webhook:** O jogador paga no app do banco. O Mercado Pago envia um aviso instantâneo via HTTP (Webhook) para a rota `/api/webhooks/mercadopago` do nosso site.
+4. **Baixa e Notificação:** 
+   - O site marca o pedido como `pago` no banco.
+   - O site aciona o Webhook de logs do Discord para avisar a staff.
+   - O site envia uma requisição para o Bot mandar uma DM de confirmação e agradecimento ao jogador.
+5. **Entrega In-Game:** O jogador abre um ticket no Discord mostrando a DM. A staff clica no Painel Admin e muda o pedido para `entregue` (opcionalmente o Bot já pode ter entregue o cargo no Discord).
+
+---
+
+## 💳 4. Integração Mercado Pago (Checkout)
+
+O site não retém saldo e não guarda dados de cartão de crédito. Ele trabalha estritamente com **PIX Transparente** via API:
+
+### Como Atualizar suas Chaves do Mercado Pago
 1. Acesse o [Painel de Desenvolvedores do Mercado Pago](https://www.mercadopago.com.br/developers/panel/applications).
-2. Selecione a sua aplicação "Detroit Roleplay".
-3. Vá no menu **Credenciais de Produção**.
-4. Copie o valor do **Access Token** (Ele sempre começa com `APP_USR-`).
-5. Acesse a **SquareCloud**, vá no dashboard do **Site Principal** e abra a aba **Variáveis**.
-6. Encontre a variável `MERCADOPAGO_ACCESS_TOKEN` e cole a chave nova.
-7. Clique em **Salvar** e **Restart** na aplicação.
+2. Selecione a aplicação "Detroit Roleplay".
+3. Vá em **Credenciais de Produção** e copie o **Access Token** (`APP_USR-XXXXX...`).
+4. Coloque esse valor na aba "Variáveis" da SquareCloud do Site Principal (`MERCADOPAGO_ACCESS_TOKEN`).
 
-> ⚠️ **Aviso:** Nunca use credenciais de teste se a sua conta já estiver ativada para produção, pois o Mercado Pago recusa chaves misturadas com o erro `Unauthorized use of live credentials`.
-
----
-
-## 🔗 Configurando o Webhook do Mercado Pago (Retorno Automático)
-
-Para que o site saiba quando um jogador pagou o PIX e atualize o pedido sozinho:
-1. No painel do Mercado Pago (na mesma tela da sua aplicação), vá em **Notificações > Webhooks**.
-2. Na URL de produção, coloque o link exato do seu site:
-   `https://detroit.squareweb.app/api/webhooks/mercadopago`
-3. Nos **Eventos**, marque **APENAS** a opção `Pagamentos` (ou `payment`).
-4. Salve. Pronto! Agora todo PIX pago fará o site atualizar o status e mandar DM pro jogador pelo Bot.
+### Link Oficial do Webhook
+No painel do Mercado Pago, configure o Webhook para eventos do tipo `payment` apontando para:
+`https://detroit.squareweb.app/api/webhooks/mercadopago`
 
 ---
 
-## ⚙️ Variáveis de Ambiente (SquareCloud)
+## 🤖 5. Bot do Discord e Rotinas (Cron)
 
-Tanto o **Site Principal** quanto o **Painel Admin** exigem que você configure as seguintes variáveis no painel da SquareCloud:
+O Bot não é apenas de comandos; ele é a ponte entre o site e a guilda:
 
-| Variável | Descrição | Exemplo / Onde Pegar |
+- **DMs de Compra:** Ele ouve comandos internos do site para disparar as DMs bonitas com Embeds para os compradores.
+- **Sistema Anti-Flood e Filtros:** Moderador automático para o chat global.
+- **Vencimento de VIPs (CRON):** O site principal tem uma rota `/api/cron/vip-check`. Essa rota deve ser pingada a cada 24 horas (via serviços como cron-job.org ou UptimeRobot). Quando acionada, ela varre o banco de dados procurando VIPs expirados, remove os cargos dos usuários pelo Bot e atualiza o status no banco de dados.
+
+---
+
+## ⚙️ 6. Resumo de Variáveis de Ambiente Necessárias
+
+Certifique-se de que a SquareCloud tenha exatamente estas variáveis:
+
+| Variável | Onde Usar | Descrição |
 |---|---|---|
-| `DATABASE_URL` | Conexão com o Banco de Dados MySQL | Pegue no painel da SquareCloud (Database) |
-| `AUTH_SECRET` | Chave de criptografia de login | Texto longo (pode gerar um aleatório) |
-| `AUTH_DISCORD_ID` | Client ID do App do Discord | Portal de Desenvolvedores do Discord |
-| `AUTH_DISCORD_SECRET` | Client Secret do App do Discord | Portal de Desenvolvedores do Discord |
-| `NEXTAUTH_URL` | URL do seu site (obrigatório pro login) | `https://detroit.squareweb.app` |
-| `MERCADOPAGO_ACCESS_TOKEN` | Chave de PIX (Apenas no Site Principal) | Painel Mercado Pago |
-| `DISCORD_WEBHOOK_URL` | Canal de logs de compras (Apenas Site) | Canal do Discord > Integrações |
-| `DISCORD_BOT_TOKEN` | Token do Bot para mandar DM (Apenas Site)| Portal de Desenvolvedores do Discord |
+| `DATABASE_URL` | Admin, Site, Bot | `mysql://user:pass@host:port/db` |
+| `AUTH_SECRET` | Admin, Site | Hash de criptografia NextAuth |
+| `AUTH_DISCORD_ID` | Admin, Site | Client ID do App Discord |
+| `AUTH_DISCORD_SECRET`| Admin, Site | Client Secret do App Discord |
+| `NEXTAUTH_URL` | Admin, Site | Ex: `https://detroit.squareweb.app` |
+| `MERCADOPAGO_ACCESS_TOKEN`| Site Principal | Token de Produção MP |
+| `DISCORD_WEBHOOK_URL`| Site Principal | Webhook canal de compras |
+| `DISCORD_BOT_TOKEN` | Site, Bot | Token real do Bot Discord |
+| `CRON_SECRET` | Site Principal | Senha para proteger a URL cron |
 
 ---
 
-## 🖥️ Como rodar e testar no seu PC (Localhost)
+## 🔄 7. Manutenção e Deploy
 
-Se quiser testar algo antes de mandar para a hospedagem:
-1. Abra o terminal na pasta do projeto (`site` ou `admin`).
-2. Garanta que você tem o arquivo `.env.local` na pasta contendo as mesmas variáveis mostradas na tabela acima.
-3. Rode o comando:
-   ```bash
-   npm run dev
-   ```
-4. Acesse `http://localhost:3000` (ou a porta que o terminal mostrar).
+Os projetos estão ligados ao **GitHub**. Sempre que alterações forem feitas no código base:
+1. Abra o painel da SquareCloud.
+2. Selecione a Aplicação correspondente.
+3. Clique em **Commit / Update** (para a Square baixar o código novo do GitHub).
+4. Aguarde a mensagem de sucesso e clique em **Restart**.
+5. Em caso de mudanças no banco de dados (novas tabelas), lembre-se de rodar a rota protegida de seed ou atualizar manualmente, caso haja novas features grandes no futuro.
 
 ---
-
-## 🔄 Como enviar atualizações para a Hospedagem
-
-Se eu (o programador) enviar novos códigos para o seu projeto, siga os passos abaixo para que a hospedagem aplique:
-
-1. Acesse o [Painel da SquareCloud](https://squarecloud.app/).
-2. Entre na sua aplicação (Site ou Admin).
-3. Na página inicial do app, procure o botão **Commit / Update** (Ele vai puxar as atualizações do seu GitHub).
-4. O servidor será reiniciado sozinho. Aguarde a tela preta de "Logs" terminar de carregar.
-5. Sucesso! Seu site já está rodando a versão mais atual.
+*Documentação gerada e mantida pela equipe de desenvolvimento de Detroit Roleplay.*
