@@ -155,9 +155,9 @@ export async function POST(request: Request) {
     }
 
     // 1. Criar o pedido pai na tabela `orders`
-    // Como a tabela exige product_id para retrocompatibilidade, passamos o primeiro item (ou NULL se permitirmos)
-    // Vamos usar NULL agora que atualizamos a tabela no seed.
-    const orderResult = await query<ResultSetHeader>(
+    // Como a tabela exige product_id para retrocompatibilidade, passamos NULL
+    const { getPool } = await import("@/lib/db");
+    const [orderResult] = await getPool().execute<ResultSetHeader>(
       `INSERT INTO orders (code, user_id, product_id, status, original_price, discount, price, coupon_code, expires_at, game_id, full_name, email, cpf)
        VALUES (?, ?, NULL, 'pendente', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [code, userId, subtotal, discount, finalPrice, appliedCoupon, expiresAt, gameId, fullName, email, cpf]
