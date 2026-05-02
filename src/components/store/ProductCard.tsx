@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   id: string;
@@ -16,6 +17,19 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ id, title, description, price, image, category, featured, index }: ProductCardProps) {
+  const { addItem } = useCart();
+
+  function handleAddToCart(e: React.MouseEvent) {
+    e.preventDefault(); // Prevenir navegação do Link
+    e.stopPropagation();
+    addItem({
+      productId: Number(id),
+      title,
+      price,
+      image,
+    });
+  }
+
   return (
     <Link href={`/product/${id}`} className="block">
     <motion.div
@@ -59,24 +73,28 @@ export function ProductCard({ id, title, description, price, image, category, fe
       {/* Content */}
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-xl font-bold tracking-tight text-white mb-1">{title}</h3>
-        <p className="text-sm font-medium text-zinc-500 mb-6 line-clamp-2">
+        <p className="text-sm font-medium text-zinc-500 mb-4 line-clamp-2">
           {description || "Entrega imediata in-game"}
         </p>
         
-        <div className="mt-auto flex items-end justify-between gap-4">
+        <div className="mt-auto flex flex-col gap-3">
           <div className="flex flex-col shrink-0">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Valor Unitário</span>
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">À vista no Pix</span>
             <span className="text-2xl font-mono tracking-tighter text-white font-bold">R$ {price.toFixed(2)}</span>
           </div>
 
-          <button className="relative overflow-hidden flex items-center justify-center w-12 h-12 shrink-0 rounded-full bg-zinc-800 text-white transition-all duration-300 ease-out group-hover:bg-[var(--color-detroit-red)] group-hover:w-[140px] group-hover:shadow-[0_0_20px_rgba(229,9,20,0.4)]">
-            <span className="absolute opacity-0 font-bold whitespace-nowrap text-sm right-10 translate-x-4 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-              Comprar
-            </span>
-            <svg className="w-5 h-5 absolute right-3.5 group-hover:-rotate-45 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
+          {/* BUTTONS */}
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleAddToCart}
+              className="w-full py-3 rounded-xl bg-zinc-800 border border-white/5 text-sm font-bold text-zinc-300 hover:bg-zinc-700 hover:text-white active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Adicionar ao carrinho
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>

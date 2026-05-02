@@ -49,16 +49,13 @@ export async function POST(request: Request) {
       original_price: number;
       discount: number;
       coupon_code: string | null;
-      product_title: string;
       user_discord_id: string;
       user_discord_tag: string;
     }>(
       `SELECT o.id, o.code, o.status, o.price, o.original_price, o.discount, o.coupon_code,
-              p.title as product_title,
               u.discord_id as user_discord_id,
               u.discord_tag as user_discord_tag
        FROM orders o
-       INNER JOIN products p ON o.product_id = p.id
        INNER JOIN users u ON o.user_id = u.id
        WHERE o.code = ?`,
       [orderCode]
@@ -82,12 +79,25 @@ export async function POST(request: Request) {
       [order.id]
     );
 
+    // Buscar itens para o titulo
+    const items = await query<{ quantity: number; title: string }>(
+      `SELECT oi.quantity, p.title 
+       FROM order_items oi
+       INNER JOIN products p ON oi.product_id = p.id
+       WHERE oi.order_id = ?`,
+      [order.id]
+    );
+
+    const productTitle = items.length > 0 
+      ? items.map(i => `${i.quantity}x ${i.title}`).join(", ")
+      : "Pedido Legado (Sem Itens)";
+
     console.log(`✅ Pedido ${order.code} pago via PIX! (MP ID: ${paymentId})`);
 
     // Enviar notificação no canal Discord (fire-and-forget)
     sendOrderNotification({
       code: order.code,
-      productTitle: order.product_title,
+      productTitle,
       userTag: order.user_discord_tag,
       userDiscordId: order.user_discord_id,
       originalPrice: Number(order.original_price),
@@ -100,7 +110,7 @@ export async function POST(request: Request) {
     // Enviar DM privada ao comprador
     sendPurchaseDM(order.user_discord_id, {
       code: order.code,
-      productTitle: order.product_title,
+      productTitle,
       finalPrice: Number(order.price),
       discount: Number(order.discount),
       originalPrice: Number(order.original_price),

@@ -125,6 +125,31 @@ export async function runSeed() {
   }
 
   // ═══════════════════════════════════════
+  // TABELA: order_items (itens do carrinho)
+  // ═══════════════════════════════════════
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS order_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_id INT NOT NULL,
+      product_id INT NOT NULL,
+      quantity INT NOT NULL DEFAULT 1,
+      unit_price DECIMAL(10,2) NOT NULL,
+      FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+      FOREIGN KEY (product_id) REFERENCES products(id),
+      INDEX idx_order (order_id)
+    )
+  `);
+  console.log("✅ Tabela order_items verificada/criada.");
+
+  // Modificar product_id em orders para permitir NULL (retrocompatibilidade)
+  try {
+    await db.execute(`ALTER TABLE orders MODIFY product_id INT NULL`);
+    console.log("✅ Tabela orders atualizada para aceitar múltiplos produtos (product_id NULL).");
+  } catch {
+    // Ignorar se falhar
+  }
+
+  // ═══════════════════════════════════════
   // TABELA: coupons (cupons de desconto)
   // ═══════════════════════════════════════
   await db.execute(`

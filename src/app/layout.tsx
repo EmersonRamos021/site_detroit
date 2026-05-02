@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,7 +30,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body suppressHydrationWarning className="min-h-[100dvh] flex flex-col bg-zinc-950 text-zinc-50 tracking-tight font-sans">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <CartDrawer />
+        </Providers>
       </body>
     </html>
   );

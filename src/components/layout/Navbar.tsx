@@ -1,16 +1,18 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { DiscordLogo, Package, Gear, SignOut } from "@phosphor-icons/react";
+import { DiscordLogo, Package, SignOut, ShoppingCart } from "@phosphor-icons/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
 
 export function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { itemCount, openCart } = useCart();
 
   // Fechar menu ao clicar fora
   useEffect(() => {
@@ -48,8 +50,22 @@ export function Navbar() {
           <Link href="/#store" className="hover:text-zinc-50 transition-colors">Loja VIP</Link>
         </nav>
 
-        {/* AUTH */}
+        {/* AUTH + CART */}
         <div className="flex items-center gap-3">
+          {/* CART BUTTON */}
+          <button
+            onClick={openCart}
+            className="relative flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-detroit-red)] hover:bg-[var(--color-detroit-red-hover)] text-sm font-bold text-white transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(229,9,20,0.3)]"
+          >
+            <ShoppingCart weight="bold" size={18} />
+            <span className="hidden sm:inline">Carrinho</span>
+            {itemCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 flex items-center justify-center px-1 rounded-full bg-white text-[var(--color-detroit-red)] text-[11px] font-black shadow-lg">
+                {itemCount}
+              </span>
+            )}
+          </button>
+
           {status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-zinc-800 animate-pulse" />
           ) : session ? (
