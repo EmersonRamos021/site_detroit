@@ -7,17 +7,19 @@ export function Hero() {
   return (
     <section className="relative min-h-[100dvh] w-full flex items-center pt-24 pb-12 px-6 overflow-hidden">
       {/* BACKGROUND IMAGE WITH GRADIENT OVERLAY */}
-      <div className="absolute inset-0 z-0 select-none pointer-events-none">
+      <div className="absolute inset-0 z-0 select-none pointer-events-none bg-zinc-950">
         <Image
-          src="/detroit_bg.png"
+          src="/detroit_bg_v2.png"
           alt="Detroit Roleplay Background"
           fill
-          className="object-cover opacity-60"
+          className="object-cover opacity-85 mix-blend-screen"
           priority
         />
         {/* Dark radial fade to blend with zinc-950 bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-transparent to-transparent opacity-80" />
+        {/* Glow red highlight near the text */}
+        <div className="absolute top-1/3 left-0 w-1/2 h-1/2 bg-[var(--color-detroit-red)]/10 blur-[150px] rounded-full pointer-events-none" />
       </div>
 
       <div className="relative z-10 max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
