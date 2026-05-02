@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { productId, couponCode } = body;
+    const { productId, couponCode, gameId, fullName, email, cpf } = body;
 
     if (!productId) {
       return Response.json(
@@ -110,9 +110,9 @@ export async function POST(request: Request) {
 
     // Criar pedido
     await query(
-      `INSERT INTO orders (code, user_id, product_id, status, original_price, discount, price, coupon_code, expires_at)
-       VALUES (?, ?, ?, 'pendente', ?, ?, ?, ?, ?)`,
-      [code, userId, product.id, product.price, discount, finalPrice, appliedCoupon, expiresAt]
+      `INSERT INTO orders (code, user_id, product_id, status, original_price, discount, price, coupon_code, expires_at, game_id, full_name, email, cpf)
+       VALUES (?, ?, ?, 'pendente', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [code, userId, product.id, product.price, discount, finalPrice, appliedCoupon, expiresAt, gameId, fullName, email, cpf]
     );
 
     // Buscar tag do usuário para a notificação
@@ -132,6 +132,10 @@ export async function POST(request: Request) {
       finalPrice,
       couponCode: appliedCoupon,
       status: "pendente",
+      gameId,
+      fullName,
+      email,
+      cpf,
     });
 
     // Enviar DM privada ao comprador (fire-and-forget)

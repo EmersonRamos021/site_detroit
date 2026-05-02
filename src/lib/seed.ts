@@ -80,6 +80,10 @@ export async function runSeed() {
       expires_at TIMESTAMP NULL DEFAULT NULL,
       expiry_notified BOOLEAN DEFAULT FALSE,
       vip_days INT DEFAULT 30,
+      game_id VARCHAR(50) DEFAULT NULL,
+      full_name VARCHAR(255) DEFAULT NULL,
+      email VARCHAR(255) DEFAULT NULL,
+      cpf VARCHAR(20) DEFAULT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id),
@@ -107,6 +111,17 @@ export async function runSeed() {
     console.log("✅ Coluna mp_payment_id adicionada à tabela orders.");
   } catch {
     // Coluna já existe — ignorar o erro
+  }
+
+  // Migração: adicionar campos de checkout (game_id, full_name, email, cpf)
+  try {
+    await db.execute(`ALTER TABLE orders ADD COLUMN game_id VARCHAR(50) DEFAULT NULL`);
+    await db.execute(`ALTER TABLE orders ADD COLUMN full_name VARCHAR(255) DEFAULT NULL`);
+    await db.execute(`ALTER TABLE orders ADD COLUMN email VARCHAR(255) DEFAULT NULL`);
+    await db.execute(`ALTER TABLE orders ADD COLUMN cpf VARCHAR(20) DEFAULT NULL`);
+    console.log("✅ Colunas de checkout adicionadas à tabela orders.");
+  } catch {
+    // Colunas já existem — ignorar o erro
   }
 
   // ═══════════════════════════════════════

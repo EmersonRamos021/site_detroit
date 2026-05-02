@@ -18,6 +18,13 @@ export function BuyButton({ productId, productTitle, price }: BuyButtonProps) {
   const [discountInfo, setDiscountInfo] = useState<{ code: string; amount: number; finalPrice: number } | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
 
+  // Form Fields
+  const [gameId, setGameId] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   async function handleValidateCoupon() {
     if (!couponCode) return;
     setValidatingCoupon(true);
@@ -46,6 +53,15 @@ export function BuyButton({ productId, productTitle, price }: BuyButtonProps) {
   }
 
   async function handleBuy() {
+    if (!gameId || !fullName || !email || !cpf) {
+      setMessage({ type: "error", text: "Preencha todos os dados obrigatórios para continuar." });
+      return;
+    }
+    if (!termsAccepted) {
+      setMessage({ type: "error", text: "Você precisa aceitar os termos e condições." });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
@@ -55,7 +71,11 @@ export function BuyButton({ productId, productTitle, price }: BuyButtonProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           productId,
-          couponCode: discountInfo ? discountInfo.code : undefined 
+          couponCode: discountInfo ? discountInfo.code : undefined,
+          gameId,
+          fullName,
+          email,
+          cpf
         }),
       });
 
@@ -84,24 +104,80 @@ export function BuyButton({ productId, productTitle, price }: BuyButtonProps) {
   const displayPrice = discountInfo ? discountInfo.finalPrice : price;
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-6 w-full max-w-md mx-auto sm:mx-0">
+      
+      {/* INFORMATIVE ALERT */}
+      <div className="p-4 rounded-xl bg-zinc-900/50 border border-white/5 text-sm text-zinc-400">
+        <span className="font-bold text-white">Atenção:</span> Para garantir a entrega correta de seu pedido, é essencial que você forneça seu <span className="font-bold text-white">nome completo</span> e <span className="font-bold text-white">CPF válido</span>. Por favor, verifique a precisão dessas informações, pois a entrega será realizada com base nos dados informados.
+      </div>
+
+      {/* FORM FIELDS */}
+      <div className="flex flex-col gap-3">
+        <input 
+          type="text" 
+          placeholder="Seu ID na cidade" 
+          value={gameId}
+          onChange={e => setGameId(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+        />
+        <input 
+          type="text" 
+          placeholder="Nome completo" 
+          value={fullName}
+          onChange={e => setFullName(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+        />
+        <input 
+          type="email" 
+          placeholder="Email" 
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+        />
+        <input 
+          type="text" 
+          placeholder="CPF" 
+          value={cpf}
+          onChange={e => setCpf(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+        />
+      </div>
+
       {/* COUPON INPUT */}
-      <div className="flex items-center gap-2 max-w-sm">
+      <div className="flex items-center gap-2">
         <input 
           type="text" 
           value={couponCode} 
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           placeholder="Possui um cupom?" 
-          className="flex-1 px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-sm text-white font-mono placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+          className="flex-1 px-4 py-3 rounded-xl bg-zinc-900 border border-white/10 text-sm text-white font-mono placeholder:text-zinc-600 focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
         />
         <button 
           onClick={handleValidateCoupon} 
           disabled={!couponCode || validatingCoupon}
-          className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-sm font-bold hover:bg-zinc-700 disabled:opacity-50 transition-colors"
+          className="px-6 py-3 rounded-xl bg-zinc-800 text-zinc-300 text-sm font-bold hover:bg-zinc-700 disabled:opacity-50 transition-colors"
         >
           {validatingCoupon ? "..." : "Aplicar"}
         </button>
       </div>
+
+      {/* TERMS CHECKBOX */}
+      <label className="flex items-start gap-3 cursor-pointer group">
+        <div className="relative flex items-center justify-center mt-0.5">
+          <input 
+            type="checkbox" 
+            checked={termsAccepted}
+            onChange={e => setTermsAccepted(e.target.checked)}
+            className="peer appearance-none w-5 h-5 border-2 border-zinc-600 rounded bg-transparent checked:bg-[var(--color-detroit-red)] checked:border-[var(--color-detroit-red)] transition-all"
+          />
+          <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition-colors leading-relaxed">
+          Eu aceito os <span className="font-bold text-white">termos e condições</span> desta compra e <span className="font-bold text-white">confirmo</span> que os produtos serão entregues exclusivamente à conta vinculada ao <span className="font-bold text-white">ID informado acima</span>, ciente de que a entrega depende desses dados estarem corretos.
+        </span>
+      </label>
 
       <button
         onClick={handleBuy}

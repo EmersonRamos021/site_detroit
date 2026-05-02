@@ -88,6 +88,10 @@ interface OrderNotificationPayload {
   finalPrice: number;
   couponCode?: string | null;
   status?: string;
+  gameId?: string;
+  fullName?: string;
+  email?: string;
+  cpf?: string;
 }
 
 /**
@@ -120,6 +124,14 @@ export async function sendOrderNotification(order: OrderNotificationPayload): Pr
       inline: true,
     },
   ];
+
+  if (order.gameId || order.fullName || order.email || order.cpf) {
+    fields.push({
+      name: "📋 Dados de Entrega",
+      value: `**ID:** ${order.gameId || "N/A"}\n**Nome:** ${order.fullName || "N/A"}\n**Email:** ${order.email || "N/A"}\n**CPF:** ${order.cpf || "N/A"}`,
+      inline: false,
+    });
+  }
 
   if (order.couponCode) {
     fields.push({
