@@ -40,11 +40,23 @@ export async function POST(request: Request) {
     }
 
     // Buscar pedido
-    const orders = await query<OrderData>(
+    const orders = await query<{
+      id: number;
+      code: string;
+      price: number;
+      status: string;
+      mp_payment_id: number | null;
+      legacy_product_title: string | null;
+      items_title: string | null;
+    }>(
       `SELECT o.id, o.code, o.price, o.status, o.mp_payment_id,
-              p.title as product_title
+              p.title as legacy_product_title,
+              (SELECT GROUP_CONCAT(CONCAT(oi.quantity, 'x ', p2.title) SEPARATOR ', ')
+               FROM order_items oi
+               INNER JOIN products p2 ON oi.product_id = p2.id
+               WHERE oi.order_id = o.id) as items_title
        FROM orders o
-       INNER JOIN products p ON o.product_id = p.id
+       LEFT JOIN products p ON o.product_id = p.id
        INNER JOIN users u ON o.user_id = u.id
        WHERE o.code = ? AND u.discord_id = ?`,
       [orderCode, session.user.discord_id]
@@ -76,9 +88,10 @@ export async function POST(request: Request) {
     const payerEmail = users[0]?.email || `discord_${session.user.discord_id}@detroitroleplay.com`;
 
     // Criar pagamento PIX no Mercado Pago
+    const productTitle = order.items_title || order.legacy_product_title || "Vários Itens";
     const pixData = await createPixPayment({
       amount: Number(order.price),
-      description: `Detroit RP - ${order.product_title} (${order.code})`,
+      description: `Detroit RP - ${productTitle} (${order.code})`,
       payerEmail,
       externalReference: order.code,
     });
@@ -101,7 +114,7 @@ export async function POST(request: Request) {
       order: {
         code: order.code,
         price: Number(order.price),
-        product: order.product_title,
+        product: productTitle,
       },
     });
   } catch (error: any) {
