@@ -55,7 +55,7 @@ export function ProductCard({ id, title, description, price, image, category, fe
           src={image}
           alt={title}
           fill
-          className="object-cover z-10 group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-screen opacity-90 grayscale group-hover:grayscale-0 group-hover:opacity-100"
+          className="object-cover z-10 group-hover:scale-105 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
         />
 
         <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
