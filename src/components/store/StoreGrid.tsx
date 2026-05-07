@@ -57,8 +57,21 @@ export function StoreGrid() {
         
         if (!res.ok) throw new Error("Erro ao carregar produtos");
         
-        const data = await res.json();
-        setProducts(data.products);
+        let fetchedProducts = data.products as Product[];
+        
+        // Organiza a ordem na aba Todos (VIPs > Veículos > Planos > Drops)
+        if (activeCategory === "todos") {
+          const categoryOrder = ["vips", "veiculos", "planos", "drops"];
+          fetchedProducts.sort((a, b) => {
+            const rankA = categoryOrder.indexOf(a.categorySlug) === -1 ? 999 : categoryOrder.indexOf(a.categorySlug);
+            const rankB = categoryOrder.indexOf(b.categorySlug) === -1 ? 999 : categoryOrder.indexOf(b.categorySlug);
+            if (rankA !== rankB) return rankA - rankB;
+            // Desempate por título
+            return a.title.localeCompare(b.title);
+          });
+        }
+        
+        setProducts(fetchedProducts);
         
         // Categorias só carregam uma vez
         if (categories.length === 0 && data.categories) {
