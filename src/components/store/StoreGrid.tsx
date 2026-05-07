@@ -57,6 +57,7 @@ export function StoreGrid() {
         
         if (!res.ok) throw new Error("Erro ao carregar produtos");
         
+        const data = await res.json();
         let fetchedProducts = data.products as Product[];
         
         // Organiza a ordem na aba Todos (VIPs > Veículos > Planos > Drops)
