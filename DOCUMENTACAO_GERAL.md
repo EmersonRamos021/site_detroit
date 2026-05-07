@@ -9,8 +9,8 @@ Bem-vindo à documentação oficial arquitetural do **Detroit Roleplay**. Este d
 O projeto foi construído dividindo as responsabilidades em 3 sistemas principais que se conectam ao mesmo banco de dados MySQL:
 
 1. **Site Principal (Loja):** Focado na experiência do jogador. Autenticação rápida via Discord, visualização de produtos, uso de cupons de desconto e geração de pagamentos PIX automatizados.
-2. **Painel Admin (Dashboard):** Focado na gestão da equipe. Permite criar novos produtos, controlar e alterar status de pedidos manualmente, gerenciar cupons, listar histórico financeiro e coordenar IDs/Camarotes in-game.
-3. **Bot do Discord:** Focado em utilidade e interação. Responsável por mandar DMs com confirmações de compra, entregar benefícios in-game via tickets, e fornecer um painel robusto de moderação, anti-flood e auto-role.
+2. **Painel Admin (Dashboard):** Focado na gestão da equipe. Permite criar novos produtos com envio automático de imagens para a **SquareCloud Blob API**, gerenciar cupons, listar histórico financeiro, coordenar IDs in-game e acessar o histórico em HTML de tickets fechados.
+3. **Bot do Discord:** Focado em utilidade e interação. Responsável por mandar DMs com confirmações de compra, entregar benefícios in-game via tickets (salvando transcrições no banco de dados), e fornecer moderação automática e auto-role.
 
 ```mermaid
 graph TD
@@ -23,6 +23,7 @@ graph TD
     DB[("💾 MySQL<br>Banco Compartilhado")]
     MP["💳 Mercado Pago<br>PIX API"]
     DISCORD["💬 Discord API<br>Webhooks + Bot Token"]
+    BLOB["☁️ SquareCloud Blob<br>Hospedagem de Imagens"]
     
     SITE -->|"queries"| DB
     ADMIN -->|"queries"| DB
@@ -34,6 +35,9 @@ graph TD
     SITE -->|"DMs + Webhooks"| DISCORD
     ADMIN -->|"DMs + Webhooks"| DISCORD
     BOT -->|"comandos + eventos"| DISCORD
+    
+    ADMIN -->|"Upload via Axios/Fetch"| BLOB
+    SITE -->|"Fetch/Render"| BLOB
 ```
 
 ---
@@ -142,6 +146,18 @@ erDiagram
         ENUM status
     }
     
+    tickets {
+        INT id PK
+        VARCHAR ticket_id UK
+        VARCHAR user_id
+        VARCHAR user_tag
+        VARCHAR owner_id "Equipe/staff"
+        ENUM status "open | closed"
+        LONGTEXT transcript_html
+        TIMESTAMP created_at
+        TIMESTAMP closed_at
+    }
+    
     users ||--o{ orders : "faz"
     products ||--o{ orders : "legacy"
     categories ||--o{ products : "contém"
@@ -194,3 +210,4 @@ O Bot é a ponte entre a plataforma e o servidor do Discord, contando com:
 | `CLIENT_ID` | Bot | Client ID do Bot Discord (para comandos Slash) |
 | `CRON_SECRET` | Site Principal | Senha para proteger a URL cron (`/api/cron/vip-check`) |
 | `ADMIN_DISCORD_IDS` | Site Principal | Discord IDs (separados por vírgula) que ganham cargo `admin` |
+| `SQUARE_CLOUD_API_KEY` | Admin | Chave de API da SquareCloud para fazer o upload das imagens de produtos pro Blob |
