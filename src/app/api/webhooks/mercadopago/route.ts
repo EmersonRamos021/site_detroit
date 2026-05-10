@@ -51,8 +51,9 @@ export async function POST(request: Request) {
       coupon_code: string | null;
       user_discord_id: string;
       user_discord_tag: string;
+      game_id: string | null;
     }>(
-      `SELECT o.id, o.code, o.status, o.price, o.original_price, o.discount, o.coupon_code,
+      `SELECT o.id, o.code, o.status, o.price, o.original_price, o.discount, o.coupon_code, o.game_id,
               u.discord_id as user_discord_id,
               u.discord_tag as user_discord_tag
        FROM orders o
@@ -79,9 +80,9 @@ export async function POST(request: Request) {
       [order.id]
     );
 
-    // Buscar itens para o titulo
-    const items = await query<{ quantity: number; title: string }>(
-      `SELECT oi.quantity, p.title 
+    // Buscar itens para o titulo e comandos in-game
+    const items = await query<{ quantity: number; title: string; in_game_command: string | null }>(
+      `SELECT oi.quantity, p.title, p.in_game_command 
        FROM order_items oi
        INNER JOIN products p ON oi.product_id = p.id
        WHERE oi.order_id = ?`,
