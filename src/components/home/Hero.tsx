@@ -14,6 +14,8 @@ export function Hero() {
           fill
           className="object-cover opacity-80"
           priority
+          quality={100}
+          unoptimized
         />
         {/* Smooth gradients to ensure text readability without ruining the image */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
