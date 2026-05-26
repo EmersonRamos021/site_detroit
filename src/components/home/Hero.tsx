@@ -9,7 +9,7 @@ export function Hero() {
       {/* BACKGROUND IMAGE WITH GRADIENT OVERLAY */}
       <div className="absolute inset-0 z-0 select-none pointer-events-none">
         <Image
-          src="/detroit_bg_v2.png"
+          src="/Fundo-site.jpg"
           alt="Detroit Roleplay Background"
           fill
           className="object-cover opacity-50"
