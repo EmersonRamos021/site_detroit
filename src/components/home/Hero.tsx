@@ -26,7 +26,8 @@ export function Hero() {
         {/* LEFT ALIGNED CONTENT (Asymmetric) */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
-          animate={{ opacity: 1, x: 0 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.8, type: "spring", stiffness: 80, damping: 20 }}
           className="max-w-2xl"
         >

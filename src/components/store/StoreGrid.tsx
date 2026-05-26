@@ -97,7 +97,13 @@ export function StoreGrid() {
   return (
     <section id="store" className="py-32 px-6 relative max-w-[1400px] mx-auto w-full">
       {/* HEADER & TABS */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8"
+      >
         <div className="max-w-2xl">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-white mb-4">
             Catálogo Oficial
@@ -131,7 +137,7 @@ export function StoreGrid() {
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* LOADING SKELETON */}
       {loading && (
@@ -179,10 +185,11 @@ export function StoreGrid() {
               {products.map((product, idx) => (
                 <motion.div
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.1 }}
+                  exit={{ opacity: 0, scale: 0.9, y: -40 }}
+                  transition={{ duration: 0.4, delay: (idx % 4) * 0.1 }}
                   key={product.id}
                 >
                   <ProductCard {...product} index={idx} />
