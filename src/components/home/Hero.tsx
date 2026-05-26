@@ -55,6 +55,27 @@ export function Hero() {
           </div>
         </motion.div>
       </div>
+
+      {/* SCROLL INDICATOR */}
+      <motion.div 
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+      >
+        <a href="#store" className="flex flex-col items-center gap-2 group">
+          <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-zinc-500 group-hover:text-zinc-300 transition-colors">
+            Deslize para explorar
+          </span>
+          <div className="w-6 h-10 border-2 border-zinc-600/60 group-hover:border-zinc-400/80 rounded-full flex justify-center p-1 transition-colors">
+            <motion.div
+              className="w-1 h-2 bg-zinc-500 group-hover:bg-zinc-300 rounded-full"
+              animate={{ y: [0, 14, 0], opacity: [1, 0, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            />
+          </div>
+        </a>
+      </motion.div>
     </section>
   );
 }
