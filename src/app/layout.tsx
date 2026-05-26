@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body suppressHydrationWarning className="min-h-[100dvh] flex flex-col bg-zinc-950 text-zinc-50 tracking-tight font-sans">
+      <body suppressHydrationWarning className="min-h-[100dvh] flex flex-col bg-zinc-950 bg-[url('/Fundo-site.jpg')] bg-cover bg-center bg-fixed bg-no-repeat bg-blend-overlay text-zinc-50 tracking-tight font-sans">
         <Providers>
           {children}
           <CartDrawer />
