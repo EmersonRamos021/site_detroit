@@ -12,12 +12,12 @@ export function Hero() {
           src="/Fundo-site.jpg"
           alt="Detroit Roleplay Background"
           fill
-          className="object-cover opacity-50"
+          className="object-cover opacity-80"
           priority
         />
         {/* Smooth gradients to ensure text readability without ruining the image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/10 to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
