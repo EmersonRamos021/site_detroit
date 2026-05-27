@@ -209,32 +209,32 @@ export async function runSeed() {
 
     await db.execute(
       `
-      INSERT INTO products (title, description, price, image_url, category_id, featured) VALUES
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?)
+      INSERT INTO products (title, description, price, image_url, category_id, featured, in_game_command) VALUES
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?, ?)
     `,
       [
         // Veículos Reais do Servidor
-        "BMW X6 Competition", "SUV de luxo com alta performance e design imponente.", 150000.0, "/detroit_bg.png", veiculosId, true,
-        "Lamborghini Huracan Tecnica 2023", "Superesportivo incrível com motor V10.", 2190000.0, "/detroit_bg.png", veiculosId, true,
-        "Honda Civic G10", "Sedan icônico com excelente dirigibilidade e conforto.", 1373950.0, "/detroit_bg.png", veiculosId, false,
-        "Toyota Corolla 2023", "O sedan mais vendido do mundo, confiável e moderno.", 416810.0, "/detroit_bg.png", veiculosId, false,
-        "Vw Gol G5", "Hatch compacto ideal para o dia a dia.", 242013.0, "/detroit_bg.png", veiculosId, false,
-        "Vw Golf MK8", "Hatch esportivo de alta tecnologia e performance.", 330000.0, "/detroit_bg.png", veiculosId, true,
-        "Toyota Hilux 2022", "Picape robusta preparada para qualquer terreno.", 249990.0, "/detroit_bg.png", veiculosId, true,
-        "Honda Start 160 2025", "Moto econômica e ágil para entregas e locomoção urbana.", 88390.0, "/detroit_bg.png", veiculosId, false,
-        "BMW 1250", "Moto premium para aventuras e viagens.", 131300.0, "/detroit_bg.png", veiculosId, true,
+        "BMW X6 Competition", "SUV de luxo com alta performance e design imponente.", 150000.0, "/detroit_bg.png", veiculosId, true, "add_car:BMW X6 Competition",
+        "Lamborghini Huracan Tecnica 2023", "Superesportivo incrível com motor V10.", 2190000.0, "/detroit_bg.png", veiculosId, true, "add_car:Lamborghini Huracan Tecnica 2023",
+        "Honda Civic G10", "Sedan icônico com excelente dirigibilidade e conforto.", 1373950.0, "/detroit_bg.png", veiculosId, false, "add_car:Honda Civic G10",
+        "Toyota Corolla 2023", "O sedan mais vendido do mundo, confiável e moderno.", 416810.0, "/detroit_bg.png", veiculosId, false, "add_car:Toyota Corolla 2023",
+        "Vw Gol G5", "Hatch compacto ideal para o dia a dia.", 242013.0, "/detroit_bg.png", veiculosId, false, "add_car:Vw Gol G5",
+        "Vw Golf MK8", "Hatch esportivo de alta tecnologia e performance.", 330000.0, "/detroit_bg.png", veiculosId, true, "add_car:Vw Golf MK8",
+        "Toyota Hilux 2022", "Picape robusta preparada para qualquer terreno.", 249990.0, "/detroit_bg.png", veiculosId, true, "add_car:Toyota Hilux 2022",
+        "Honda Start 160 2025", "Moto econômica e ágil para entregas e locomoção urbana.", 88390.0, "/detroit_bg.png", veiculosId, false, "add_car:Honda Start 160 2025",
+        "BMW 1250", "Moto premium para aventuras e viagens.", 131300.0, "/detroit_bg.png", veiculosId, true, "add_car:BMW 1250",
 
         // VIP (Mantendo o VIP Padrão como exemplo)
-        "VIP Black", "Acesso premium com benefícios exclusivos: prioridade no servidor e muito mais.", 80.0, "/detroit_bg.png", vipsId, true
+        "VIP Black", "Acesso premium com benefícios exclusivos: prioridade no servidor e muito mais.", 80.0, "/detroit_bg.png", vipsId, true, "add_vip:Black"
       ]
     );
     console.log("✅ Produtos iniciais inseridos.");
