@@ -215,50 +215,26 @@ export async function runSeed() {
         (?, ?, ?, ?, ?, ?),
         (?, ?, ?, ?, ?, ?),
         (?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?),
         (?, ?, ?, ?, ?, ?)
     `,
       [
-        "Mustang GT",
-        "Ford Mustang GT exclusivo com tunagem completa. Domine as ruas de Detroit com estilo.",
-        120.0,
-        "https://picsum.photos/seed/mustang/600/400",
-        veiculosId,
-        true,
+        // Veículos Reais do Servidor
+        "BMW X6 Competition", "SUV de luxo com alta performance e design imponente.", 150000.0, "/detroit_bg.png", veiculosId, true,
+        "Lamborghini Huracan Tecnica 2023", "Superesportivo incrível com motor V10.", 2190000.0, "/detroit_bg.png", veiculosId, true,
+        "Honda Civic G10", "Sedan icônico com excelente dirigibilidade e conforto.", 1373950.0, "/detroit_bg.png", veiculosId, false,
+        "Toyota Corolla 2023", "O sedan mais vendido do mundo, confiável e moderno.", 416810.0, "/detroit_bg.png", veiculosId, false,
+        "Vw Gol G5", "Hatch compacto ideal para o dia a dia.", 242013.0, "/detroit_bg.png", veiculosId, false,
+        "Vw Golf MK8", "Hatch esportivo de alta tecnologia e performance.", 330000.0, "/detroit_bg.png", veiculosId, true,
+        "Toyota Hilux 2022", "Picape robusta preparada para qualquer terreno.", 249990.0, "/detroit_bg.png", veiculosId, true,
+        "Honda Start 160 2025", "Moto econômica e ágil para entregas e locomoção urbana.", 88390.0, "/detroit_bg.png", veiculosId, false,
+        "BMW 1250", "Moto premium para aventuras e viagens.", 131300.0, "/detroit_bg.png", veiculosId, true,
 
-        "VIP Black",
-        "Acesso premium com benefícios exclusivos: prioridade no servidor, cores exclusivas e muito mais.",
-        80.0,
-        "https://picsum.photos/seed/vipblack/600/400",
-        vipsId,
-        true,
-
-        "Lancer Evo",
-        "Mitsubishi Lancer Evolution com performance máxima para corridas.",
-        90.0,
-        "https://picsum.photos/seed/lancer/600/400",
-        veiculosId,
-        false,
-
-        "Plano Magnata",
-        "O plano mais completo: todos os VIPs + veículos exclusivos + benefícios permanentes.",
-        250.0,
-        "https://picsum.photos/seed/magnata/600/400",
-        planosId,
-        true,
-
-        "Audi RS5",
-        "Audi RS5 Sportback — potência e elegância em um só pacote.",
-        110.0,
-        "https://picsum.photos/seed/audirs5/600/400",
-        veiculosId,
-        false,
-
-        "VIP Premium",
-        "Pacote VIP intermediário com vantagens exclusivas no servidor.",
-        50.0,
-        "https://picsum.photos/seed/vippremium/600/400",
-        vipsId,
-        false,
+        // VIP (Mantendo o VIP Padrão como exemplo)
+        "VIP Black", "Acesso premium com benefícios exclusivos: prioridade no servidor e muito mais.", 80.0, "/detroit_bg.png", vipsId, true
       ]
     );
     console.log("✅ Produtos iniciais inseridos.");
