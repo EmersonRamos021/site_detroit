@@ -255,7 +255,8 @@ export async function sendPurchaseDM(
     originalPrice: number;
     couponCode?: string | null;
     expiresAt?: Date | null;
-  }
+  },
+  status: "pendente" | "pago" = "pendente"
 ): Promise<void> {
   const storeUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -268,18 +269,30 @@ export async function sendPurchaseDM(
       ? `\n🎟️ **Desconto:** -R$ ${order.discount.toFixed(2)} (cupom \`${order.couponCode}\`)`
       : "";
 
+  const title = status === "pago" 
+    ? "🛒 Detroit Roleplay — Pagamento Aprovado!" 
+    : "🛒 Detroit Roleplay — Pedido Confirmado!";
+
+  const description = status === "pago"
+    ? `Olá! O pagamento do seu pedido foi **aprovado** com sucesso.\n\n` +
+      `📦 **Produto:** ${order.productTitle}\n` +
+      `🔖 **Código:** \`${order.code}\`\n` +
+      `💰 **Valor:** R$ ${order.finalPrice.toFixed(2)}${discountLine}${expiryLine}\n` +
+      `📋 **Status:** 🟢 Pago\n\n` +
+      `O seu pedido já está na fila de entrega automática do servidor!`
+    : `Olá! Seu pedido foi criado com sucesso e está aguardando confirmação de pagamento.\n\n` +
+      `📦 **Produto:** ${order.productTitle}\n` +
+      `🔖 **Código:** \`${order.code}\`\n` +
+      `💰 **Valor:** R$ ${order.finalPrice.toFixed(2)}${discountLine}${expiryLine}\n` +
+      `📋 **Status:** 🟡 Pendente\n\n` +
+      `Assim que o pagamento for confirmado, você receberá uma nova notificação!`;
+
   await sendDM(discordUserId, {
     embeds: [
       {
-        title: "🛒 Detroit Roleplay — Pedido Confirmado!",
-        description:
-          `Olá! Seu pedido foi criado com sucesso e está aguardando confirmação de pagamento.\n\n` +
-          `📦 **Produto:** ${order.productTitle}\n` +
-          `🔖 **Código:** \`${order.code}\`\n` +
-          `💰 **Valor:** R$ ${order.finalPrice.toFixed(2)}${discountLine}${expiryLine}\n` +
-          `📋 **Status:** 🟡 Pendente\n\n` +
-          `Assim que o staff confirmar o pagamento, você receberá uma nova notificação!`,
-        color: 0xe50914,
+        title,
+        description,
+        color: status === "pago" ? 0x22c55e : 0xe50914, // verde para pago, vermelho para pendente
         footer: { text: "Detroit Roleplay Store" },
         timestamp: new Date().toISOString(),
         url: `${storeUrl}/orders`,

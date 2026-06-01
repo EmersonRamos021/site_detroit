@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       originalPrice: Number(order.original_price),
       couponCode: order.coupon_code,
       expiresAt: null,
-    });
+    }, "pago");
 
     return Response.json({ received: true, paid: true, orderCode: order.code });
   } catch (error) {
