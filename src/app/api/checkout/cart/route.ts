@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { query } from "@/lib/db";
-import { sendOrderNotification, sendPurchaseDM } from "@/lib/discord";
+import { sendOrderNotification, sendPurchaseDM, sendErrorLog } from "@/lib/discord";
 import { ResultSetHeader } from "mysql2";
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -33,22 +35,37 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    const { items, couponCode, gameId, fullName, email, cpf } = body as {
-      items: CartItemInput[];
-      couponCode?: string;
-      gameId: string;
-      fullName: string;
-      email: string;
-      cpf: string;
-    };
-
-    if (!items || items.length === 0) {
+    const rateLimitResult = rateLimit(session.user.discord_id, 3, 5 * 60 * 1000); // Max 3 checkouts in 5 minutes
+    if (!rateLimitResult.success) {
       return Response.json(
-        { error: "Carrinho vazio." },
+        { error: "Muitas tentativas em pouco tempo. Tente novamente em 5 minutos." },
+        { status: 429 }
+      );
+    }
+
+    const cartSchema = z.object({
+      items: z.array(z.object({
+        productId: z.number().int().positive(),
+        quantity: z.number().int().positive().max(100),
+      })).min(1, "Carrinho vazio."),
+      couponCode: z.string().optional().nullable(),
+      gameId: z.string().min(1, "ID in-game é obrigatório.").max(100),
+      fullName: z.string().max(200).optional().nullable(),
+      email: z.string().email("E-mail inválido.").max(200).optional().nullable(),
+      cpf: z.string().max(20).optional().nullable(),
+    });
+
+    const body = await request.json();
+    const parseResult = cartSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return Response.json(
+        { error: "Dados do pedido inválidos.", details: parseResult.error.errors },
         { status: 400 }
       );
     }
+
+    const { items, couponCode, gameId, fullName, email, cpf } = parseResult.data;
 
     // Buscar user do banco
     const users = await query<DbUser>(
@@ -213,8 +230,9 @@ export async function POST(request: Request) {
         status: "pendente",
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Erro ao processar checkout do carrinho:", error);
+    await sendErrorLog("Checkout Carrinho (/api/checkout/cart)", error);
     return Response.json(
       { error: "Erro interno ao processar pedido." },
       { status: 500 }

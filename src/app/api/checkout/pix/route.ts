@@ -1,6 +1,9 @@
 import { auth } from "@/auth";
 import { query } from "@/lib/db";
 import { createPixPayment } from "@/lib/mercadopago";
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
+import { sendErrorLog } from "@/lib/discord";
 
 export const dynamic = "force-dynamic";
 
@@ -29,15 +32,29 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    const { orderCode } = body;
-
-    if (!orderCode) {
+    const rateLimitResult = rateLimit(session.user.discord_id, 5, 5 * 60 * 1000); // 5 pix por 5 minutos
+    if (!rateLimitResult.success) {
       return Response.json(
-        { error: "Código do pedido é obrigatório." },
+        { error: "Muitas tentativas de PIX em pouco tempo. Tente novamente em 5 minutos." },
+        { status: 429 }
+      );
+    }
+
+    const pixSchema = z.object({
+      orderCode: z.string().min(1, "Código do pedido é obrigatório.").max(100),
+    });
+
+    const body = await request.json();
+    const parseResult = pixSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return Response.json(
+        { error: "Dados inválidos enviados.", details: parseResult.error.errors },
         { status: 400 }
       );
     }
+
+    const { orderCode } = parseResult.data;
 
     // Buscar pedido
     const orders = await query<{
@@ -127,6 +144,8 @@ export async function POST(request: Request) {
     } else if (error.message) {
       mpError = `Erro: ${error.message}`;
     }
+
+    await sendErrorLog("Gerar Pagamento PIX (/api/checkout/pix)", error);
 
     return Response.json(
       { error: mpError },

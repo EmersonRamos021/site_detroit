@@ -352,3 +352,41 @@ export async function sendVipExpiryWarningDM(
     ],
   });
 }
+
+/**
+ * Envia um log de erro fatal para um canal privado da Staff.
+ * Útil para monitorar falhas no banco de dados ou APIs externas.
+ */
+export async function sendErrorLog(errorContext: string, errorDetails: any): Promise<void> {
+  const ERROR_WEBHOOK = process.env.DISCORD_ERROR_WEBHOOK_URL;
+  if (!ERROR_WEBHOOK) return;
+
+  const errorMessage = errorDetails instanceof Error ? errorDetails.message : String(errorDetails);
+  const stack = errorDetails instanceof Error ? errorDetails.stack?.slice(0, 1000) : "N/A";
+
+  try {
+    await fetch(ERROR_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [
+          {
+            title: "🚨 ERRO CRÍTICO NO SITE",
+            color: 0x000000, // preto
+            description: `**Contexto:** ${errorContext}\n\n**Mensagem:** \`${errorMessage}\``,
+            fields: [
+              {
+                name: "Stack Trace",
+                value: `\`\`\`js\n${stack}\n\`\`\``,
+              },
+            ],
+            timestamp: new Date().toISOString(),
+          },
+        ],
+        username: "Detroit Error Monitor",
+      }),
+    });
+  } catch (e) {
+    console.error("Falha ao enviar log de erro ao Discord:", e);
+  }
+}
