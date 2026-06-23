@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { query } from "@/lib/db";
 import { getPaymentStatus } from "@/lib/mercadopago";
+import { sendOrderNotification, sendPurchaseDM } from "@/lib/discord";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,16 @@ export async function GET(
       code: string;
       status: string;
       price: number;
+      original_price: number;
+      discount: number;
+      coupon_code: string | null;
       product_title: string;
       mp_payment_id: number | null;
+      user_discord_tag: string;
+      user_discord_id: string;
     }>(
-      `SELECT o.id, o.code, o.status, o.price, o.mp_payment_id,
+      `SELECT o.id, o.code, o.status, o.price, o.original_price, o.discount, o.coupon_code, o.mp_payment_id,
+              u.discord_tag as user_discord_tag, u.discord_id as user_discord_id,
               COALESCE(
                 (SELECT GROUP_CONCAT(CONCAT(oi.quantity, 'x ', p2.title) SEPARATOR ', ')
                  FROM order_items oi
@@ -61,6 +68,29 @@ export async function GET(
             [order.id]
           );
           order.status = "pago";
+
+          // Como o polling atualizou o status antes do webhook, enviamos a notificação aqui
+          sendOrderNotification({
+            code: order.code,
+            productTitle: order.product_title,
+            userTag: order.user_discord_tag,
+            userDiscordId: order.user_discord_id,
+            originalPrice: Number(order.original_price),
+            discount: Number(order.discount),
+            finalPrice: Number(order.price),
+            couponCode: order.coupon_code,
+            status: "pago",
+          });
+
+          sendPurchaseDM(order.user_discord_id, {
+            code: order.code,
+            productTitle: order.product_title,
+            finalPrice: Number(order.price),
+            discount: Number(order.discount),
+            originalPrice: Number(order.original_price),
+            couponCode: order.coupon_code,
+            expiresAt: null,
+          }, "pago");
         }
       } catch {
         // Ignorar falhas na consulta ao MP, o webhook pode entregar depois

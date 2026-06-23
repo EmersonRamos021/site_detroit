@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import { getPaymentStatus } from "@/lib/mercadopago";
 import { sendOrderNotification, sendPurchaseDM } from "@/lib/discord";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -10,15 +11,49 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const signature = request.headers.get("x-signature");
+    const requestId = request.headers.get("x-request-id");
+    
+    // Ler o body como texto primeiro para não consumir o buffer
+    const bodyText = await request.text();
+    let body;
+    try {
+      body = JSON.parse(bodyText);
+    } catch (e) {
+      return Response.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    const paymentId = body.data?.id || (new URL(request.url).searchParams.get("data.id"));
+    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+
+    // Validação da assinatura x-signature (Recomendado pelo Mercado Pago)
+    if (secret && signature && requestId && paymentId) {
+      const parts = signature.split(",");
+      let ts = "";
+      let v1 = "";
+      parts.forEach(part => {
+        const [key, val] = part.split("=");
+        if (key.trim() === "ts") ts = val.trim();
+        if (key.trim() === "v1") v1 = val.trim();
+      });
+
+      const manifest = `id:${paymentId};request-id:${requestId};ts:${ts};`;
+      const hmac = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
+
+      if (hmac !== v1) {
+        console.error("❌ Webhook MP: Assinatura x-signature inválida!");
+        return Response.json({ error: "Assinatura inválida" }, { status: 403 });
+      }
+    } else if (secret) {
+      console.error("❌ Webhook MP: Requisição sem assinatura x-signature.");
+      return Response.json({ error: "Assinatura ausente" }, { status: 403 });
+    }
 
     // O Mercado Pago envia diferentes tipos de notificação
     // Estamos interessados em notificações do tipo "payment"
     if (body.type !== "payment" && body.action !== "payment.updated") {
       return Response.json({ received: true });
     }
-
-    const paymentId = body.data?.id;
 
     if (!paymentId) {
       return Response.json({ received: true });
