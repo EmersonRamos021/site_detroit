@@ -28,7 +28,7 @@ export function Footer() {
           <h4 className="text-white font-semibold">Navegação</h4>
           <ul className="flex flex-col gap-2 text-sm text-zinc-400">
             <li><Link href="/" className="hover:text-[var(--color-detroit-red)] transition-colors">Início</Link></li>
-            <li><Link href="#store" className="hover:text-[var(--color-detroit-red)] transition-colors">Loja VIP</Link></li>
+            <li><Link href="#store" className="hover:text-[var(--color-detroit-red)] transition-colors">Loja</Link></li>
             <li><Link href="#" className="hover:text-[var(--color-detroit-red)] transition-colors">Termos & Condições</Link></li>
             <li><Link href="#" className="hover:text-[var(--color-detroit-red)] transition-colors">Política de Reembolso</Link></li>
           </ul>
