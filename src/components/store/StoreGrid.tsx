@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProductCard } from "./ProductCard";
-import { Car, Star, Package, Gift, SquaresFour } from "@phosphor-icons/react";
+import { Car, Star, Package, Gift, SquaresFour, Coin } from "@phosphor-icons/react";
 
 interface Product {
   id: string;
@@ -29,6 +29,8 @@ const getCategoryIcon = (slug: string) => {
       return <Car size={18} weight="duotone" className="mr-2" />;
     case "vips":
       return <Star size={18} weight="duotone" className="mr-2" />;
+    case "coins":
+      return <Coin size={18} weight="duotone" className="mr-2" />;
     case "planos":
       return <Package size={18} weight="duotone" className="mr-2" />;
     case "drops":
@@ -60,9 +62,9 @@ export function StoreGrid() {
         const data = await res.json();
         let fetchedProducts = data.products as Product[];
         
-        // Organiza a ordem na aba Todos (VIPs > Veículos > Planos > Drops)
+        // Organiza a ordem na aba Todos (VIPs > Coins > Veículos > Planos > Drops)
         if (activeCategory === "todos") {
-          const categoryOrder = ["vips", "veiculos", "planos", "drops"];
+          const categoryOrder = ["vips", "coins", "veiculos", "planos", "drops"];
           fetchedProducts.sort((a, b) => {
             const rankA = categoryOrder.indexOf(a.categorySlug) === -1 ? 999 : categoryOrder.indexOf(a.categorySlug);
             const rankB = categoryOrder.indexOf(b.categorySlug) === -1 ? 999 : categoryOrder.indexOf(b.categorySlug);
