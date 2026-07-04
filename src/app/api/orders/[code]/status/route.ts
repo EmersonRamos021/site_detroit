@@ -67,6 +67,13 @@ export async function GET(
             "UPDATE orders SET status = 'pago', updated_at = NOW() WHERE id = ?",
             [order.id]
           );
+
+          // Registrar no financeiro automaticamente
+          await query(
+            `INSERT INTO finance_transactions (type, amount, description, category) VALUES (?, ?, ?, ?)`,
+            ["entrada", Number(order.final_price), `Compra Automática (#${order.code})`, "Loja Automática"]
+          );
+
           order.status = "pago";
 
           // Como o polling atualizou o status antes do webhook, enviamos a notificação aqui

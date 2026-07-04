@@ -115,6 +115,12 @@ export async function POST(request: Request) {
       [order.id]
     );
 
+    // Registrar no financeiro automaticamente
+    await query(
+      `INSERT INTO finance_transactions (type, amount, description, category) VALUES (?, ?, ?, ?)`,
+      ["entrada", Number(order.final_price), `Compra Automática (#${order.code})`, "Loja Automática"]
+    );
+
     // Buscar itens para o titulo e comandos in-game
     const items = await query<{ quantity: number; title: string; in_game_command: string | null }>(
       `SELECT oi.quantity, p.title, p.in_game_command 
