@@ -9,12 +9,12 @@ export function Footer() {
         {/* BRAND INFO */}
         <div>
           <div className="flex flex-col gap-4">
-            <Link href="/" className="flex items-center group relative w-[140px] h-10 overflow-hidden opacity-90 hover:opacity-100 transition-opacity">
+            <Link href="/" className="flex items-center group relative w-[200px] h-10 overflow-hidden opacity-90 hover:opacity-100 transition-opacity">
               <Image 
                 src="/logodetroit.png" 
                 alt="Detroit Roleplay" 
                 fill
-                className="object-cover object-center"
+                className="object-contain object-left"
               />
             </Link>
             <p className="text-zinc-500 text-sm max-w-sm">

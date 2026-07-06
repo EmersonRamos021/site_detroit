@@ -34,12 +34,12 @@ export function Navbar() {
     >
       <div className="max-w-[1400px] mx-auto glass-panel rounded-[2rem] px-6 py-3 flex items-center justify-between">
         {/* LOGO */}
-        <Link href="/" className="flex items-center group relative w-[140px] h-10 overflow-hidden">
+        <Link href="/" className="flex items-center group relative w-[200px] h-10 overflow-hidden">
           <Image 
             src="/logodetroit.png" 
             alt="Detroit Roleplay" 
             fill
-            className="object-cover object-center drop-shadow-[0_0_15px_rgba(229,9,20,0.2)] opacity-90 group-hover:opacity-100 transition-opacity"
+            className="object-contain object-left drop-shadow-[0_0_15px_rgba(229,9,20,0.2)] opacity-90 group-hover:opacity-100 transition-opacity"
             priority
           />
         </Link>
