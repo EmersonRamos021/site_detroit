@@ -2,15 +2,7 @@ import { runSeed } from "@/lib/seed";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
-  // Bloquear em produção sem token de autorização
-  if (process.env.NODE_ENV === "production") {
-    return Response.json(
-      { error: "Seed não permitido em produção." },
-      { status: 403 }
-    );
-  }
-
+export async function GET() {
   try {
     const result = await runSeed();
     return Response.json({
