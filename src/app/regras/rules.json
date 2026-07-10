@@ -1,0 +1,80 @@
+{
+  "title": "Regulamento Detroit Roleplay",
+  "sections": [
+    {
+      "id": "regras-basicas",
+      "title": "Regras Básicas",
+      "html": "<p>Durante o jogo, todas as ações devem seguir a lógica da vida real, respeitando os limites do personagem e as consequências de cada decisão tomada.</p><p>É importante valorizar a própria vida, manter o bom senso e evitar atitudes que prejudiquem a experiência dos demais jogadores.</p><p>O Roleplay não se resume a vencer ações ou obter vantagens, mas sim a construir situações interessantes e divertidas para todos os envolvidos.</p>"
+    },
+    {
+      "id": "areas-civis",
+      "title": "Áreas Civis",
+      "html": "<p>As Safe Zones são áreas protegidas da cidade onde os cidadãos podem realizar suas atividades com segurança, sem o risco de serem alvo de ações criminosas. Esses locais existem para garantir um ambiente organizado e equilibrado, permitindo que os jogadores realizem atendimentos, negociações, compras, trabalhos e demais interações de forma tranquila.</p><p>Será considerada como <strong>área segura</strong> toda a extensão do perímetro dos locais citados abaixo, abrangendo não apenas o interior dos estabelecimentos, mas também seus arredores:</p><ul><li>Prefeitura</li><li>Hospital</li><li>Concessionárias</li><li>Lojas de Roupas</li></ul><div style='background:rgba(255,100,100,0.1); border-left: 4px solid red; padding: 10px; margin-top: 20px;'><strong>Aviso:</strong> Qualquer tipo de roubo, assalto, furto, estelionato, extorsão ou prática semelhante está estritamente proibido dentro das Áreas Civis. Nenhum jogador poderá utilizar a segurança proporcionada por esses locais para cometer tais atos.</div>"
+    },
+    {
+      "id": "ilegais-regulamento",
+      "title": "Regulamento (Ilegais)",
+      "html": "<p>Este é o regulamento geral para organizações ilegais (em breve será preenchido com o texto completo).</p>"
+    },
+    {
+      "id": "areas-de-craft",
+      "title": "Áreas de Craft",
+      "html": "<p>1. A Zona de Craft é considerada uma área destinada exclusivamente à produção e coleta de recursos relacionados às atividades da organização.</p><ul><li><strong>a. É terminantemente proibido:</strong></li><li>- Iniciar assaltos dentro da Zona de Craft.</li><li>- Realizar emboscadas dentro da Zona de Craft.</li><li>- Efetuar disparos sem contexto válido.</li><li>- Permanecer na área apenas para provocar outras organizações.</li></ul><p>2. Não será permitido utilizar a Zona de Craft como local de fuga, proteção ou refúgio durante ações em andamento.</p>"
+    },
+    {
+      "id": "corps-regulamento",
+      "title": "Regulamento (Corporações)",
+      "html": "<p>Regras para corporações legais, polícia e hospital.</p>"
+    },
+    {
+      "id": "investigacoes",
+      "title": "Investigações",
+      "html": "<p>Diretrizes sobre como devem ocorrer as investigações na cidade.</p>"
+    },
+    {
+      "id": "codigo-penal",
+      "title": "Código Penal",
+      "html": "<p>Lista de crimes, meses de prisão e multas aplicadas pela polícia.</p>"
+    },
+    {
+      "id": "acoes-regulamento",
+      "title": "Regulamento de Ações",
+      "html": "<p>Regras gerais para início e condução de ações.</p>"
+    },
+    {
+      "id": "emboscadas-e-abordagens",
+      "title": "Emboscadas e Abordagens",
+      "html": "<p>Regras sobre como fazer emboscadas e abordagens na rua.</p>"
+    },
+    {
+      "id": "acoes-de-rua",
+      "title": "Ações de Rua",
+      "html": "<p>Tiroteios e ações que ocorrem na rua fora de locais marcados.</p>"
+    },
+    {
+      "id": "sequestros",
+      "title": "Sequestros",
+      "html": "<p>Regras para realizar sequestros de civis ou policiais.</p>"
+    },
+    {
+      "id": "negociacoes",
+      "title": "Negociações",
+      "html": "<p>Como o negociador deve atuar e o que pode/não pode ser pedido.</p>"
+    },
+    {
+      "id": "lojas-de-assalto",
+      "title": "Lojas de Assalto",
+      "html": "<p>Regras de limite de policiais e bandidos para Lojas de Departamento.</p>"
+    },
+    {
+      "id": "joalheria",
+      "title": "Joalheria",
+      "html": "<p>Regras específicas para o assalto à Joalheria principal.</p>"
+    },
+    {
+      "id": "banco",
+      "title": "Banco",
+      "html": "<p>Regras para banco central e bancos Paleto/Fleeca.</p>"
+    }
+  ]
+}
