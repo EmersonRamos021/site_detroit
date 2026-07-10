@@ -78,7 +78,7 @@ export function StoreGrid() {
         
         // Categorias só carregam uma vez
         if (categories.length === 0 && data.categories) {
-          const validCategories = data.categories.filter((c: Category) => c.slug !== "drops" && c.slug !== "todos");
+          const validCategories = data.categories.filter((c: Category) => c.slug !== "drops" && c.slug !== "todos" && c.slug !== "veiculos");
           setCategories(validCategories);
           if (activeCategory === "" && validCategories.length > 0) {
             setActiveCategory(validCategories[0].slug);
