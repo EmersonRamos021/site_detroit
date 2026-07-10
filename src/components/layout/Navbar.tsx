@@ -48,6 +48,7 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
           <Link href="/" className="hover:text-zinc-50 transition-colors">Início</Link>
           <Link href="/#store" className="hover:text-zinc-50 transition-colors">Loja</Link>
+          <Link href="/regras" className="hover:text-zinc-50 transition-colors">Regras</Link>
           <Link href="https://discord.gg/detroitroleplay" target="_blank" rel="noopener noreferrer" className="hover:text-[#5865F2] hover:text-zinc-50 transition-colors flex items-center gap-1.5">
             <DiscordLogo weight="fill" size={16} />
             Discord
