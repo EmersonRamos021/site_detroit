@@ -62,17 +62,21 @@ export function StoreGrid() {
         const data = await res.json();
         let fetchedProducts = data.products as Product[];
         
-        // Organiza a ordem na aba Todos (VIPs > Coins > Veículos > Planos > Drops)
-        if (activeCategory === "todos") {
-          const categoryOrder = ["vips", "coins", "veiculos", "planos", "drops"];
-          fetchedProducts.sort((a, b) => {
-            const rankA = categoryOrder.indexOf(a.categorySlug) === -1 ? 999 : categoryOrder.indexOf(a.categorySlug);
-            const rankB = categoryOrder.indexOf(b.categorySlug) === -1 ? 999 : categoryOrder.indexOf(b.categorySlug);
-            if (rankA !== rankB) return rankA - rankB;
-            // Desempate por título
-            return a.title.localeCompare(b.title);
-          });
-        }
+        // Organiza a ordem dos produtos
+        const categoryOrder = ["vips", "coins", "veiculos", "planos", "drops"];
+        fetchedProducts.sort((a, b) => {
+          const rankA = categoryOrder.indexOf(a.categorySlug) === -1 ? 999 : categoryOrder.indexOf(a.categorySlug);
+          const rankB = categoryOrder.indexOf(b.categorySlug) === -1 ? 999 : categoryOrder.indexOf(b.categorySlug);
+          
+          // 1. Ordernar por categoria
+          if (rankA !== rankB) return rankA - rankB;
+          
+          // 2. Ordenar por preço (menor para o maior)
+          if (a.price !== b.price) return a.price - b.price;
+          
+          // 3. Desempate por título
+          return a.title.localeCompare(b.title);
+        });
         
         setProducts(fetchedProducts);
         
