@@ -124,7 +124,7 @@ export async function runSeed() {
     // Colunas já existem — ignorar o erro
   }
 
-  // Migração temporária: Atualizar comandos in-game dos VIPs
+  // Migração temporária: Atualizar comandos in-game dos VIPs e Cancelar pedido 58
   try {
     await db.execute(`
       UPDATE products 
@@ -132,8 +132,12 @@ export async function runSeed() {
       WHERE title LIKE 'VIP %' AND (in_game_command IS NULL OR in_game_command = '')
     `);
     console.log("✅ Comandos In-game dos VIPs atualizados automaticamente.");
+    
+    // Cancela o pedido 58 travado
+    await db.execute(`UPDATE orders SET status = 'cancelado' WHERE id = 58 OR code = 'DR-32788IU'`);
+    console.log("✅ Pedido 58 travado foi cancelado.");
   } catch (error: any) {
-    console.log("Aviso ao atualizar comandos VIP:", error.message);
+    console.log("Aviso ao atualizar comandos VIP ou cancelar pedido:", error.message);
   }
 
   // ═══════════════════════════════════════
