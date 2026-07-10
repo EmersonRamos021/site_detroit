@@ -124,6 +124,18 @@ export async function runSeed() {
     // Colunas já existem — ignorar o erro
   }
 
+  // Migração temporária: Atualizar comandos in-game dos VIPs
+  try {
+    await db.execute(`
+      UPDATE products 
+      SET in_game_command = CONCAT('add_vip:', REPLACE(title, 'VIP ', ''))
+      WHERE title LIKE 'VIP %' AND (in_game_command IS NULL OR in_game_command = '')
+    `);
+    console.log("✅ Comandos In-game dos VIPs atualizados automaticamente.");
+  } catch (error: any) {
+    console.log("Aviso ao atualizar comandos VIP:", error.message);
+  }
+
   // ═══════════════════════════════════════
   // TABELA: order_items (itens do carrinho)
   // ═══════════════════════════════════════
