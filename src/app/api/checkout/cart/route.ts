@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       items: z.array(z.object({
         productId: z.number().int().positive(),
         quantity: z.number().int().positive().max(100),
+        carId: z.number().int().positive().optional().nullable(),
       })).min(1, "Carrinho vazio."),
       couponCode: z.string().optional().nullable(),
       gameId: z.string().min(1, "ID in-game é obrigatório.").max(100),
@@ -122,7 +123,8 @@ export async function POST(request: Request) {
         productId: dbProduct.id,
         title: dbProduct.title,
         quantity: item.quantity,
-        unitPrice
+        unitPrice,
+        carId: item.carId || null
       });
     }
 
@@ -185,8 +187,8 @@ export async function POST(request: Request) {
     // 2. Criar os itens do pedido na tabela `order_items`
     for (const item of itemsToInsert) {
       await query(
-        `INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)`,
-        [orderId, item.productId, item.quantity, item.unitPrice]
+        `INSERT INTO order_items (order_id, product_id, quantity, unit_price, car_id) VALUES (?, ?, ?, ?, ?)`,
+        [orderId, item.productId, item.quantity, item.unitPrice, item.carId]
       );
     }
 

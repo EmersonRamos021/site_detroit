@@ -27,6 +27,7 @@ export function ProductCard({ id, title, description, price, image, category, fe
       title,
       price,
       image,
+      categorySlug: category,
     });
   }
 

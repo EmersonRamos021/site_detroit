@@ -6,8 +6,36 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
+const VIP_CARS: Record<string, { id: number; name: string }[]> = {
+  "aura": [
+    { id: 587, name: "Lamborghini Huracan STO" },
+    { id: 411, name: "Lamborghini Huracan Tecnica" },
+    { id: 503, name: "Nissan Skyline GTR R34" },
+    { id: 420, name: "Subaru Impreza STI" },
+    { id: 586, name: "BMW R1250" },
+  ],
+  "royal": [
+    { id: 560, name: "Tesla Cybertruck" },
+    { id: 586, name: "BMW R1250" },
+    { id: 400, name: "BMW X6 Competition" },
+    { id: 516, name: "Toyota Hilux" },
+  ],
+  "diamond": [
+    { id: 547, name: "Volkswagen Golf MK8" },
+    { id: 585, name: "Honda Civic G10" },
+    { id: 580, name: "Toyota Corolla" },
+    { id: 400, name: "BMW X6 Competition" },
+  ],
+  "eclipse": [
+    { id: 546, name: "Chevrolet Monza" },
+    { id: 529, name: "Volkswagen Gol G5" },
+    { id: 468, name: "Honda Start 160" },
+  ],
+  "basic": []
+};
+
 export default function CheckoutCartPage() {
-  const { items, getTotal, clearCart } = useCart();
+  const { items, getTotal, clearCart, updateCarId } = useCart();
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -79,6 +107,18 @@ export default function CheckoutCartPage() {
   }
 
   async function handleCheckout() {
+    // Validar se escolheu os carros para VIP
+    for (const item of items) {
+      const isVip = item.categorySlug?.toLowerCase().includes("vip");
+      const vipLevel = isVip ? Object.keys(VIP_CARS).find(level => item.title.toLowerCase().includes(level)) || "basic" : null;
+      if (vipLevel && VIP_CARS[vipLevel] && VIP_CARS[vipLevel].length > 0) {
+        if (!item.carId) {
+          setMessage({ type: "error", text: `Você precisa selecionar o veículo para o pacote: ${item.title}` });
+          return;
+        }
+      }
+    }
+
     if (!gameId || !fullName || !email || !cpf) {
       setMessage({ type: "error", text: "Preencha todos os dados obrigatórios para continuar." });
       return;
@@ -96,7 +136,7 @@ export default function CheckoutCartPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          items: items.map(i => ({ productId: i.productId, quantity: i.quantity })),
+          items: items.map(i => ({ productId: i.productId, quantity: i.quantity, carId: i.carId })),
           couponCode: discountInfo ? discountInfo.code : undefined,
           gameId,
           fullName,
@@ -134,20 +174,50 @@ export default function CheckoutCartPage() {
           <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6">
             <h2 className="text-lg font-bold text-white mb-4">Resumo do Pedido</h2>
             <div className="flex flex-col gap-4">
-              {items.map(item => (
-                <div key={item.productId} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-950/50 border border-white/5">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-zinc-800">
-                    <Image src={item.image} alt={item.title} fill className="object-cover" />
+              {items.map(item => {
+                const isVip = item.categorySlug?.toLowerCase().includes("vip");
+                // Tenta achar qual o nivel VIP pelo nome do pacote (ex: "VIP AURA" -> "aura")
+                const vipLevel = isVip ? Object.keys(VIP_CARS).find(level => item.title.toLowerCase().includes(level)) || "basic" : null;
+                const availableCars = vipLevel ? VIP_CARS[vipLevel] : [];
+
+                return (
+                  <div key={item.productId} className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-950/50 border border-white/5">
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-zinc-800 shrink-0">
+                        <Image src={item.image} alt={item.title} fill className="object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-white">{item.title}</h3>
+                        <p className="text-sm text-zinc-400">Quantidade: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono font-bold text-white">R$ {(item.price * item.quantity).toFixed(2)}</p>
+                      </div>
+                    </div>
+
+                    {isVip && availableCars.length > 0 && (
+                      <div className="mt-2 pl-[5.5rem]">
+                        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                          Escolha o Carro In-game
+                        </label>
+                        <select 
+                          value={item.carId || ""} 
+                          onChange={(e) => updateCarId(item.productId, Number(e.target.value))}
+                          className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--color-detroit-red)] transition-colors"
+                          required
+                        >
+                          <option value="" disabled>Selecione um veículo...</option>
+                          {availableCars.map(car => (
+                            <option key={car.id} value={car.id}>
+                              {car.name} (ID: {car.id})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-white">{item.title}</h3>
-                    <p className="text-sm text-zinc-400">Quantidade: {item.quantity}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-mono font-bold text-white">R$ {(item.price * item.quantity).toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <div className="mt-6 pt-6 border-t border-white/5">

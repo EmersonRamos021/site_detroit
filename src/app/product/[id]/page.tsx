@@ -127,7 +127,7 @@ export default async function ProductPage({
 
             {/* ACTIONS */}
             <div className="flex items-center gap-4">
-              <BuyButton productId={product.id} productTitle={product.title} price={Number(product.price)} image={product.image_url || ""} />
+              <BuyButton productId={product.id} productTitle={product.title} price={Number(product.price)} image={product.image_url || ""} categorySlug={product.category_slug} />
             </div>
 
             {/* DETAILS */}

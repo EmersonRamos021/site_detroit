@@ -7,7 +7,9 @@ export interface CartItem {
   title: string;
   price: number;
   image: string;
+  categorySlug: string;
   quantity: number;
+  carId?: number;
 }
 
 interface CartContextType {
@@ -15,6 +17,7 @@ interface CartContextType {
   addItem: (product: Omit<CartItem, "quantity">) => void;
   removeItem: (productId: number) => void;
   updateQty: (productId: number, qty: number) => void;
+  updateCarId: (productId: number, carId: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   itemCount: number;
@@ -89,6 +92,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const updateCarId = useCallback((productId: number, carId: number) => {
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productId === productId ? { ...i, carId } : i
+      )
+    );
+  }, []);
+
   const clearCart = useCallback(() => {
     setItems([]);
   }, []);
@@ -110,6 +121,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         removeItem,
         updateQty,
+        updateCarId,
         clearCart,
         getTotal,
         itemCount,

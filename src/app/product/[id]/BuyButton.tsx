@@ -8,9 +8,10 @@ interface BuyButtonProps {
   productTitle: string;
   price: number;
   image: string;
+  categorySlug: string;
 }
 
-export function BuyButton({ productId, productTitle, price, image }: BuyButtonProps) {
+export function BuyButton({ productId, productTitle, price, image, categorySlug }: BuyButtonProps) {
   const router = useRouter();
   const { addItem, closeCart } = useCart();
 
@@ -20,6 +21,7 @@ export function BuyButton({ productId, productTitle, price, image }: BuyButtonPr
       title: productTitle,
       price,
       image,
+      categorySlug,
     });
   }
 
@@ -29,6 +31,7 @@ export function BuyButton({ productId, productTitle, price, image }: BuyButtonPr
       title: productTitle,
       price,
       image,
+      categorySlug,
     });
     closeCart(); // Close it in case it opens automatically
     router.push("/checkout");

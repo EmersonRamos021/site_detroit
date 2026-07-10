@@ -134,12 +134,21 @@ export async function runSeed() {
       product_id INT NOT NULL,
       quantity INT NOT NULL DEFAULT 1,
       unit_price DECIMAL(10,2) NOT NULL,
+      car_id INT DEFAULT NULL,
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
       FOREIGN KEY (product_id) REFERENCES products(id),
       INDEX idx_order (order_id)
     )
   `);
   console.log("✅ Tabela order_items verificada/criada.");
+
+  // Migração: adicionar coluna car_id para VIPs
+  try {
+    await db.execute(`ALTER TABLE order_items ADD COLUMN car_id INT DEFAULT NULL`);
+    console.log("✅ Coluna car_id adicionada à tabela order_items.");
+  } catch {
+    // Coluna já existe — ignorar o erro
+  }
 
   // Modificar product_id em orders para permitir NULL (retrocompatibilidade)
   try {
