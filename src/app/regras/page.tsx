@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { 
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
-  MapPin, Users, Target, LockKey, CurrencyCircle, Buildings, Crosshair
+  MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import rulesData from "./rules.json";
@@ -44,9 +44,9 @@ const sidebarGroups = [
       { id: "acoes-de-rua", label: "Ações de Rua", icon: WarningCircle },
       { id: "sequestros", label: "Sequestros", icon: LockKey },
       { id: "negociacoes", label: "Negociações", icon: Users },
-      { id: "lojas-de-assalto", label: "Lojas de Assalto", icon: CurrencyCircle },
-      { id: "joalheria", label: "Joalheria", icon: CurrencyCircle },
-      { id: "banco", label: "Banco", icon: CurrencyCircle },
+      { id: "lojas-de-assalto", label: "Lojas de Assalto", icon: CurrencyCircleDollar },
+      { id: "joalheria", label: "Joalheria", icon: CurrencyCircleDollar },
+      { id: "banco", label: "Banco", icon: CurrencyCircleDollar },
     ]
   }
 ];
