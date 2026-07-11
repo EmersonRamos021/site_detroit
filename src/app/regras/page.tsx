@@ -71,8 +71,12 @@ const sidebarGroups = [
       { id: "negociacoes", label: "Negociações", icon: Users },
       { id: "lojas-de-assalto", label: "Lojas de Assalto", icon: CurrencyCircleDollar },
       { id: "joalheria", label: "Joalheria", icon: CurrencyCircleDollar },
-      { id: "banco", label: "Banco", icon: CurrencyCircleDollar },
-      { id: "agendamento", label: "Agendamento Banco", icon: WarningCircle },
+      { 
+        id: "banco", label: "Banco", icon: CurrencyCircleDollar,
+        subLinks: [
+          { id: "agendamento", label: "Agendamento Banco", icon: WarningCircle }
+        ]
+      },
     ]
   }
 ];
