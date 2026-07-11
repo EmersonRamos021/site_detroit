@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
   MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair,
-  Fire, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost
+  Fire, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost,
+  Handshake, ListChecks
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import rulesData from "./rules.json";
@@ -15,6 +16,8 @@ const sidebarGroups = [
     title: "INÍCIO",
     icon: Globe,
     links: [
+      { id: "apresentacao", label: "Apresentação", icon: Handshake },
+      { id: "diretrizes-essenciais", label: "Diretrizes Essenciais", icon: ListChecks },
       { 
         id: "regras-basicas", label: "Regras Básicas", icon: BookOpen,
         subLinks: [
