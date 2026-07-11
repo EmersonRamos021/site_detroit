@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
   MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair,
@@ -79,6 +79,18 @@ const sidebarGroups = [
 
 export default function RegrasPage() {
   const [activeRule, setActiveRule] = useState("regras-basicas");
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    "regras-basicas": true,
+    "areas-civis": true
+  });
+  
+  const toggleGroup = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedGroups(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
   
   // Lista linear de todos os links para a navegação Próximo/Anterior
   const allLinks = sidebarGroups.flatMap(g => 
@@ -124,11 +136,17 @@ export default function RegrasPage() {
                     const hasSubLinks = link.subLinks && link.subLinks.length > 0;
                     // Se estivermos vendo um sub-link dele, o pai fica "semi-ativo" (só com a cor avermelhada levemente)
                     const isParentActive = hasSubLinks && link.subLinks.some(s => s.id === activeRule);
+                    const isExpanded = expandedGroups[link.id];
                     
                     return (
                       <div key={link.id} className="flex flex-col">
                         <button
-                          onClick={() => setActiveRule(link.id)}
+                          onClick={(e) => {
+                            setActiveRule(link.id);
+                            if (hasSubLinks && !isExpanded) {
+                                toggleGroup(link.id, e);
+                            }
+                          }}
                           className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                             isActive 
                               ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
@@ -142,32 +160,49 @@ export default function RegrasPage() {
                             {link.label}
                           </div>
                           {hasSubLinks && (
-                            <CaretDown weight="bold" size={14} className={isParentActive || isActive ? "text-[var(--color-detroit-red)]" : "text-zinc-500"} />
+                            <div 
+                              onClick={(e) => toggleGroup(link.id, e)}
+                              className="p-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                              <CaretDown 
+                                weight="bold" 
+                                size={14} 
+                                className={`transition-transform duration-300 ${isExpanded ? "rotate-0" : "-rotate-90"} ${isParentActive || isActive ? "text-[var(--color-detroit-red)]" : "text-zinc-500"}`} 
+                              />
+                            </div>
                           )}
                         </button>
                         
                         {/* Sub-links */}
-                        {hasSubLinks && (
-                          <div className="ml-6 mt-1 border-l border-white/10 pl-2 flex flex-col gap-1">
-                            {link.subLinks.map((subLink) => {
-                              const isSubActive = activeRule === subLink.id;
-                              return (
-                                <button
-                                  key={subLink.id}
-                                  onClick={() => setActiveRule(subLink.id)}
-                                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all ${
-                                    isSubActive 
-                                      ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
-                                      : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
-                                  }`}
-                                >
-                                  <subLink.icon weight={isSubActive ? "fill" : "regular"} size={16} />
-                                  {subLink.label}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
+                        <AnimatePresence>
+                          {hasSubLinks && isExpanded && (
+                            <motion.div 
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="ml-6 mt-1 border-l border-white/10 pl-2 flex flex-col gap-1 overflow-hidden"
+                            >
+                              {link.subLinks.map((subLink) => {
+                                const isSubActive = activeRule === subLink.id;
+                                return (
+                                  <button
+                                    key={subLink.id}
+                                    onClick={() => setActiveRule(subLink.id)}
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all ${
+                                      isSubActive 
+                                        ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
+                                        : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+                                    }`}
+                                  >
+                                    <subLink.icon weight={isSubActive ? "fill" : "regular"} size={16} />
+                                    {subLink.label}
+                                  </button>
+                                );
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     );
                   })}
