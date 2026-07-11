@@ -353,7 +353,9 @@ export default function RegrasPage() {
                   )}
                 </AnimatePresence>
               </div>
-            )})}
+            );
+          })
+        )}
           </div>
         </aside>
 
