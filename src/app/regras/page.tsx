@@ -87,12 +87,25 @@ export default function RegrasPage() {
     "regras-basicas": true,
     "areas-civis": true
   });
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    "INÍCIO": true,
+    "ORGANIZAÇÕES ILEGAIS": true,
+    "CORPORAÇÕES": true,
+    "AÇÕES": true,
+  });
   
   const toggleGroup = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedGroups(prev => ({
       ...prev,
       [id]: !prev[id]
+    }));
+  };
+
+  const toggleCategory = (title: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [title]: !prev[title]
     }));
   };
   
@@ -128,14 +141,30 @@ export default function RegrasPage() {
           </div>
           
           <div className="overflow-y-auto p-4 flex flex-col gap-6 scrollbar-thin scrollbar-thumb-zinc-700">
-            {sidebarGroups.map((group, idx) => (
-              <div key={idx}>
-                <h3 className="text-xs font-bold text-zinc-500 mb-3 flex items-center gap-2 uppercase tracking-wider">
-                  <group.icon weight="fill" size={14} />
-                  {group.title}
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {group.links.map((link) => {
+            {sidebarGroups.map((group, idx) => {
+              const isCatExpanded = expandedCategories[group.title] ?? true;
+              return (
+              <div key={idx} className="flex flex-col mb-4">
+                <button 
+                  onClick={() => toggleCategory(group.title)}
+                  className="flex items-center justify-between text-xs font-bold text-zinc-500 mb-2 uppercase tracking-wider hover:text-zinc-300 transition-colors w-full text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <group.icon weight="fill" size={14} />
+                    {group.title}
+                  </div>
+                  <CaretDown weight="bold" size={12} className={`transition-transform duration-300 ${isCatExpanded ? "rotate-0" : "-rotate-90"}`} />
+                </button>
+                <AnimatePresence>
+                  {isCatExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex flex-col gap-1 overflow-hidden"
+                    >
+                      {group.links.map((link) => {
                     const isActive = activeRule === link.id;
                     const hasSubLinks = link.subLinks && link.subLinks.length > 0;
                     // Se estivermos vendo um sub-link dele, o pai fica "semi-ativo" (só com a cor avermelhada levemente)
@@ -210,9 +239,11 @@ export default function RegrasPage() {
                       </div>
                     );
                   })}
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            ))}
+            )})}
           </div>
         </aside>
 
