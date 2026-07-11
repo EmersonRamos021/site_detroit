@@ -121,6 +121,33 @@ export default function RegrasPage() {
   const prevLink = currentIndex > 0 ? allLinks[currentIndex - 1] : null;
   const nextLink = currentIndex < allLinks.length - 1 ? allLinks[currentIndex + 1] : null;
 
+  // Interceptar cliques nos links internos do GitBook que vieram no HTML
+  useEffect(() => {
+    const handleInternalLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.classList.contains('internal-link')) {
+        e.preventDefault();
+        const hash = link.getAttribute('href');
+        if (hash && hash.startsWith('#')) {
+          const ruleId = hash.substring(1);
+          // Atualiza a regra ativa para a página clicada
+          setActiveRule(ruleId);
+          
+          // Expande automaticamente a categoria e o grupo se for necessário
+          // Como isso é apenas navegação, não precisamos forçar a expansão aqui para não complicar,
+          // mas a página do conteúdo já será trocada imediatamente!
+          
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    };
+
+    document.addEventListener('click', handleInternalLinkClick);
+    return () => document.removeEventListener('click', handleInternalLinkClick);
+  }, []);
+
   // Encontra os dados da regra atual baseada no ID
   const currentRuleData = rulesData.sections.find((s: any) => s.id === activeRule) || {
     title: "Em Desenvolvimento",
