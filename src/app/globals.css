@@ -58,4 +58,15 @@
   .hint p {
     @apply m-0;
   }
+
+  /* Estilização Premium para os números das Listas (Regras 1, 2, 3...) */
+  .prose ol > li {
+    @apply flex items-start gap-3 my-4;
+  }
+  .prose ol > li > div:first-child {
+    @apply text-[var(--color-detroit-red)] font-black text-base bg-zinc-900 border border-white/10 rounded-lg min-w-[32px] h-[32px] flex items-center justify-center shadow-md shrink-0 mt-0.5;
+  }
+  .prose ol > li > div:last-child {
+    @apply pt-1;
+  }
 }
