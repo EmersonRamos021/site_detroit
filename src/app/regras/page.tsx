@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
   MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair,
-  HandMiddleFinger, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost
+  Fire, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import rulesData from "./rules.json";
@@ -18,7 +18,7 @@ const sidebarGroups = [
       { 
         id: "regras-basicas", label: "Regras Básicas", icon: BookOpen,
         subLinks: [
-          { id: "flaming", label: "Flaming", icon: HandMiddleFinger },
+          { id: "flaming", label: "Flaming", icon: Fire },
           { id: "out-of-character-ooc", label: "OOC", icon: ArrowSquareOut },
           { id: "power-gaming-pg", label: "Power Gaming (PG)", icon: Wheelchair },
           { id: "amor-a-vida-sav", label: "Amor à Vida (SAV)", icon: Heart },
