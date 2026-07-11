@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MagnifyingGlass, FileText, ArrowRight } from "@phosphor-icons/react";
 import rulesData from "./rules.json";
@@ -45,17 +45,26 @@ export function RulesSearchModal({ isOpen, onClose, onSelect, allLinks }: RulesS
     }
   }, [isOpen]);
 
-  // Strip HTML to make search text clean
-  const stripHtml = (html: string) => {
-    if (typeof window === 'undefined') return html;
-    const tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
-  };
+  // Pre-process rules text so we don't freeze the browser on every keystroke
+  const searchIndex = useMemo(() => {
+    return rulesData.sections.map(section => {
+      let plainText = "";
+      if (typeof window !== 'undefined') {
+        const tmp = document.createElement("DIV");
+        tmp.innerHTML = section.html || "";
+        plainText = tmp.textContent || tmp.innerText || "";
+      } else {
+        plainText = section.html || "";
+      }
+      return {
+        ...section,
+        searchableText: (section.title + " " + plainText).toLowerCase()
+      };
+    });
+  }, []);
 
-  const results = query.length >= 2 ? rulesData.sections.filter(section => {
-    const textToSearch = (section.title + " " + stripHtml(section.html || "")).toLowerCase();
-    return textToSearch.includes(query.toLowerCase());
+  const results = query.length >= 2 ? searchIndex.filter(section => {
+    return section.searchableText.includes(query.toLowerCase());
   }).map(section => {
     const link = allLinks.find(l => l.id === section.id);
     return {
