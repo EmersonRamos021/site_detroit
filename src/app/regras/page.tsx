@@ -7,9 +7,8 @@ import {
   Fire, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost,
   Handshake, ListChecks, MagnifyingGlass
 } from "@phosphor-icons/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import rulesData from "./rules.json";
-import { RulesSearchModal } from "./RulesSearchModal";
 
 // Hardcoded Sidebar Structure exactly as the GitBook screenshots
 const sidebarGroups = [
@@ -87,7 +86,9 @@ const sidebarGroups = [
 
 export default function RegrasPage() {
   const [activeRule, setActiveRule] = useState("regras-basicas");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     "regras-basicas": true,
     "areas-civis": true
@@ -137,13 +138,7 @@ export default function RegrasPage() {
         const hash = link.getAttribute('href');
         if (hash && hash.startsWith('#')) {
           const ruleId = hash.substring(1);
-          // Atualiza a regra ativa para a página clicada
           setActiveRule(ruleId);
-          
-          // Expande automaticamente a categoria e o grupo se for necessário
-          // Como isso é apenas navegação, não precisamos forçar a expansão aqui para não complicar,
-          // mas a página do conteúdo já será trocada imediatamente!
-          
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
@@ -152,6 +147,46 @@ export default function RegrasPage() {
     document.addEventListener('click', handleInternalLinkClick);
     return () => document.removeEventListener('click', handleInternalLinkClick);
   }, []);
+
+  // Atalho global Ctrl+K para focar na pesquisa
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Pre-processamento da pesquisa para não travar
+  const searchIndex = useMemo(() => {
+    return rulesData.sections.map((section: any) => {
+      let plainText = "";
+      if (typeof window !== 'undefined') {
+        const tmp = document.createElement("DIV");
+        tmp.innerHTML = section.html || "";
+        plainText = tmp.textContent || tmp.innerText || "";
+      } else {
+        plainText = section.html || "";
+      }
+      return {
+        ...section,
+        searchableText: (section.title + " " + plainText).toLowerCase()
+      };
+    });
+  }, []);
+
+  const searchResults = searchQuery.length >= 2 ? searchIndex.filter((section: any) => {
+    return section.searchableText.includes(searchQuery.toLowerCase());
+  }).map((section: any) => {
+    const link = allLinks.find(l => l.id === section.id);
+    return {
+      ...section,
+      label: link ? link.label : section.title
+    };
+  }) : [];
 
   // Encontra os dados da regra atual baseada no ID
   const currentRuleData = rulesData.sections.find((s: any) => s.id === activeRule) || {
@@ -171,26 +206,55 @@ export default function RegrasPage() {
               Regulamento
             </h2>
             
-            <button 
-              onClick={() => setIsSearchOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors group"
-            >
-              <div className="flex items-center gap-2 text-zinc-400 group-hover:text-zinc-300">
-                <MagnifyingGlass size={16} />
-                <span className="text-sm">Search...</span>
-              </div>
-              <div className="flex gap-1 text-[10px] font-bold text-zinc-500">
+            <div className="relative w-full flex items-center px-3 py-2 bg-white/5 border border-white/10 rounded-xl focus-within:border-white/30 focus-within:bg-white/10 transition-colors">
+              <MagnifyingGlass size={16} className="text-zinc-400 mr-2" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-zinc-500 w-full"
+              />
+              <div className="flex gap-1 text-[10px] font-bold text-zinc-500 ml-2 pointer-events-none">
                 <kbd className="px-1.5 py-0.5 rounded bg-black/40 border border-white/5">Ctrl</kbd>
                 <kbd className="px-1.5 py-0.5 rounded bg-black/40 border border-white/5">K</kbd>
               </div>
-            </button>
+            </div>
           </div>
           
           <div className="overflow-y-auto p-4 flex flex-col gap-6 scrollbar-thin scrollbar-thumb-zinc-700">
-            {sidebarGroups.map((group, idx) => {
-              const isCatExpanded = expandedCategories[group.title] ?? true;
-              return (
-              <div key={idx} className="flex flex-col mb-4">
+            {searchQuery.length >= 2 ? (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-xs font-bold text-zinc-500 mb-2 uppercase tracking-wider">
+                  Resultados da Pesquisa
+                </h3>
+                {searchResults.length === 0 ? (
+                  <p className="text-sm text-zinc-500 text-center py-4">Nenhum resultado encontrado.</p>
+                ) : (
+                  searchResults.map((result: any) => (
+                    <button
+                      key={result.id}
+                      onClick={() => {
+                        setActiveRule(result.id);
+                        setSearchQuery(""); // Limpa a pesquisa ao clicar
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left group"
+                    >
+                      <span className="text-sm font-medium text-white flex items-center gap-2">
+                        <FileText size={16} className="text-[var(--color-detroit-red)]" />
+                        {result.label}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            ) : (
+              sidebarGroups.map((group, idx) => {
+                const isCatExpanded = expandedCategories[group.title] ?? true;
+                return (
+                <div key={idx} className="flex flex-col mb-4">
                 <button 
                   onClick={() => toggleCategory(group.title)}
                   className="flex items-center justify-between text-xs font-bold text-zinc-500 mb-2 uppercase tracking-wider hover:text-zinc-300 transition-colors w-full text-left"
