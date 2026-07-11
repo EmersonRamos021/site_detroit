@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { 
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
-  MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair
+  MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair,
+  HandMiddleFinger, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import rulesData from "./rules.json";
@@ -14,24 +15,32 @@ const sidebarGroups = [
     title: "INÍCIO",
     icon: Globe,
     links: [
-      { id: "regras-basicas", label: "Regras Básicas", icon: BookOpen },
-      { id: "flaming", label: "Flaming", icon: WarningCircle },
-      { id: "out-of-character-ooc", label: "OOC", icon: WarningCircle },
-      { id: "power-gaming-pg", label: "Power Gaming (PG)", icon: WarningCircle },
-      { id: "amor-a-vida-sav", label: "Amor à Vida (SAV)", icon: WarningCircle },
-      { id: "forcar-rp", label: "Forçar RP", icon: WarningCircle },
-      { id: "vehicle-dathmatch-vdm", label: "VDM", icon: WarningCircle },
-      { id: "random-deathmatch-rdm", label: "RDM", icon: WarningCircle },
-      { id: "combat-logging-cl", label: "Combat Logging", icon: WarningCircle },
-      { id: "duplo-rp", label: "Duplo RP", icon: WarningCircle },
-      { id: "cop-bait", label: "Cop Bait", icon: WarningCircle },
-      { id: "revenge-kill", label: "Revenge Kill", icon: WarningCircle },
-      { id: "dark-rp", label: "Dark RP", icon: WarningCircle },
-      { id: "anti-rp", label: "Anti RP", icon: WarningCircle },
-      { id: "trash-rp", label: "Trash RP", icon: WarningCircle },
-      { id: "meta-gaming", label: "Meta Gaming", icon: WarningCircle },
-      { id: "areas-civis", label: "Áreas Civis", icon: Shield },
-      { id: "condutas", label: "Condutas", icon: WarningCircle },
+      { 
+        id: "regras-basicas", label: "Regras Básicas", icon: BookOpen,
+        subLinks: [
+          { id: "flaming", label: "Flaming", icon: HandMiddleFinger },
+          { id: "out-of-character-ooc", label: "OOC", icon: ArrowSquareOut },
+          { id: "power-gaming-pg", label: "Power Gaming (PG)", icon: Wheelchair },
+          { id: "amor-a-vida-sav", label: "Amor à Vida (SAV)", icon: Heart },
+          { id: "forcar-rp", label: "Forçar RP", icon: UsersThree },
+          { id: "vehicle-dathmatch-vdm", label: "VDM", icon: CarProfile },
+          { id: "random-deathmatch-rdm", label: "RDM", icon: Skull },
+          { id: "combat-logging-cl", label: "Combat Logging (CL)", icon: DoorOpen },
+          { id: "duplo-rp", label: "Duplo RP", icon: ArrowsClockwise },
+          { id: "cop-bait", label: "Cop Bait", icon: PoliceCar },
+          { id: "revenge-kill", label: "Revenge Kill", icon: Knife },
+          { id: "dark-rp", label: "Dark RP", icon: Ghost },
+          { id: "anti-rp", label: "Anti RP", icon: XCircle },
+          { id: "trash-rp", label: "Trash RP", icon: Trash },
+          { id: "meta-gaming", label: "Meta Gaming", icon: WarningCircle },
+        ]
+      },
+      { 
+        id: "areas-civis", label: "Áreas Civis", icon: Shield,
+        subLinks: [
+          { id: "condutas", label: "Condutas", icon: WarningCircle },
+        ]
+      },
     ]
   },
   {
@@ -72,7 +81,13 @@ export default function RegrasPage() {
   const [activeRule, setActiveRule] = useState("regras-basicas");
   
   // Lista linear de todos os links para a navegação Próximo/Anterior
-  const allLinks = sidebarGroups.flatMap(g => g.links);
+  const allLinks = sidebarGroups.flatMap(g => 
+    g.links.flatMap(link => {
+      const links = [link];
+      if (link.subLinks) links.push(...link.subLinks);
+      return links;
+    })
+  );
   const currentIndex = allLinks.findIndex(l => l.id === activeRule);
   const prevLink = currentIndex > 0 ? allLinks[currentIndex - 1] : null;
   const nextLink = currentIndex < allLinks.length - 1 ? allLinks[currentIndex + 1] : null;
@@ -106,19 +121,54 @@ export default function RegrasPage() {
                 <div className="flex flex-col gap-1">
                   {group.links.map((link) => {
                     const isActive = activeRule === link.id;
+                    const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+                    // Se estivermos vendo um sub-link dele, o pai fica "semi-ativo" (só com a cor avermelhada levemente)
+                    const isParentActive = hasSubLinks && link.subLinks.some(s => s.id === activeRule);
+                    
                     return (
-                      <button
-                        key={link.id}
-                        onClick={() => setActiveRule(link.id)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                          isActive 
-                            ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
-                            : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
-                        }`}
-                      >
-                        <link.icon weight={isActive ? "fill" : "regular"} size={18} />
-                        {link.label}
-                      </button>
+                      <div key={link.id} className="flex flex-col">
+                        <button
+                          onClick={() => setActiveRule(link.id)}
+                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                            isActive 
+                              ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
+                              : isParentActive
+                              ? "text-[var(--color-detroit-red)]"
+                              : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <link.icon weight={isActive || isParentActive ? "fill" : "regular"} size={18} />
+                            {link.label}
+                          </div>
+                          {hasSubLinks && (
+                            <CaretDown weight="bold" size={14} className={isParentActive || isActive ? "text-[var(--color-detroit-red)]" : "text-zinc-500"} />
+                          )}
+                        </button>
+                        
+                        {/* Sub-links */}
+                        {hasSubLinks && (
+                          <div className="ml-6 mt-1 border-l border-white/10 pl-2 flex flex-col gap-1">
+                            {link.subLinks.map((subLink) => {
+                              const isSubActive = activeRule === subLink.id;
+                              return (
+                                <button
+                                  key={subLink.id}
+                                  onClick={() => setActiveRule(subLink.id)}
+                                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all ${
+                                    isSubActive 
+                                      ? "bg-[var(--color-detroit-red)]/10 text-[var(--color-detroit-red)]" 
+                                      : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+                                  }`}
+                                >
+                                  <subLink.icon weight={isSubActive ? "fill" : "regular"} size={16} />
+                                  {subLink.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
