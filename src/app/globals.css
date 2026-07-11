@@ -3,11 +3,12 @@
 @theme inline {
   --color-detroit-red: #E50914;
   --color-detroit-red-hover: #b80710;
-  
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   --animate-shimmer: shimmer 1.5s infinite;
+
   @keyframes shimmer {
     100% {
       transform: translateX(100%);
@@ -26,9 +27,12 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
 
@@ -42,31 +46,38 @@
   .hint {
     @apply relative bg-zinc-900/60 backdrop-blur-md border border-white/10 rounded-xl my-6 flex items-start overflow-hidden shadow-lg;
   }
+
   .hint::before {
     content: '';
     @apply absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-detroit-red)];
   }
-  .hint > div:first-child {
+
+  .hint>div:first-child {
     @apply pt-4 pl-4 text-[var(--color-detroit-red)] shrink-0;
   }
-  .hint > div:first-child svg {
+
+  .hint>div:first-child svg {
     @apply w-5 h-5;
   }
-  .hint > div:last-child {
+
+  .hint>div:last-child {
     @apply p-4 pl-3 text-zinc-300 text-sm leading-relaxed;
   }
+
   .hint p {
     @apply m-0;
   }
 
   /* Estilização Premium para os números das Listas (Regras 1, 2, 3...) */
-  .prose ol > li {
+  .prose ol>li {
     @apply flex items-start gap-3 my-4;
   }
-  .prose ol > li > div:first-child {
+
+  .prose ol>li>div:first-child {
     @apply text-[var(--color-detroit-red)] font-black text-base bg-zinc-900 border border-white/10 rounded-lg min-w-[32px] h-[32px] flex items-center justify-center shadow-md shrink-0 mt-0.5;
   }
-  .prose ol > li > div:last-child {
+
+  .prose ol>li>div:last-child {
     @apply pt-1;
   }
 }
