@@ -5,10 +5,11 @@ import {
   Globe, Shield, BookOpen, HandFist, WarningCircle, Gavel, FileText, 
   MapPin, Users, Target, LockKey, CurrencyCircleDollar, Buildings, Crosshair,
   Fire, ArrowSquareOut, Wheelchair, Heart, UsersThree, CarProfile, Skull, DoorOpen, ArrowsClockwise, PoliceCar, Knife, XCircle, Trash, CaretDown, Ghost,
-  Handshake, ListChecks
+  Handshake, ListChecks, MagnifyingGlass
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import rulesData from "./rules.json";
+import { RulesSearchModal } from "./RulesSearchModal";
 
 // Hardcoded Sidebar Structure exactly as the GitBook screenshots
 const sidebarGroups = [
@@ -86,6 +87,7 @@ const sidebarGroups = [
 
 export default function RegrasPage() {
   const [activeRule, setActiveRule] = useState("regras-basicas");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     "regras-basicas": true,
     "areas-civis": true
@@ -164,10 +166,24 @@ export default function RegrasPage() {
         {/* SIDEBAR */}
         <aside className="w-full lg:w-[320px] shrink-0 bg-[#171717] rounded-2xl border border-white/5 overflow-hidden flex flex-col max-h-[calc(100vh-120px)] sticky top-24">
           <div className="p-5 border-b border-white/5">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
               <BookOpen weight="duotone" className="text-[var(--color-detroit-red)]" />
               Regulamento
             </h2>
+            
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors group"
+            >
+              <div className="flex items-center gap-2 text-zinc-400 group-hover:text-zinc-300">
+                <MagnifyingGlass size={16} />
+                <span className="text-sm">Search...</span>
+              </div>
+              <div className="flex gap-1 text-[10px] font-bold text-zinc-500">
+                <kbd className="px-1.5 py-0.5 rounded bg-black/40 border border-white/5">Ctrl</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-black/40 border border-white/5">K</kbd>
+              </div>
+            </button>
           </div>
           
           <div className="overflow-y-auto p-4 flex flex-col gap-6 scrollbar-thin scrollbar-thumb-zinc-700">
