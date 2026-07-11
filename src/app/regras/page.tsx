@@ -15,7 +15,23 @@ const sidebarGroups = [
     icon: Globe,
     links: [
       { id: "regras-basicas", label: "Regras Básicas", icon: BookOpen },
+      { id: "flaming", label: "Flaming", icon: WarningCircle },
+      { id: "out-of-character-ooc", label: "OOC", icon: WarningCircle },
+      { id: "power-gaming-pg", label: "Power Gaming (PG)", icon: WarningCircle },
+      { id: "amor-a-vida-sav", label: "Amor à Vida (SAV)", icon: WarningCircle },
+      { id: "forcar-rp", label: "Forçar RP", icon: WarningCircle },
+      { id: "vehicle-dathmatch-vdm", label: "VDM", icon: WarningCircle },
+      { id: "random-deathmatch-rdm", label: "RDM", icon: WarningCircle },
+      { id: "combat-logging-cl", label: "Combat Logging", icon: WarningCircle },
+      { id: "duplo-rp", label: "Duplo RP", icon: WarningCircle },
+      { id: "cop-bait", label: "Cop Bait", icon: WarningCircle },
+      { id: "revenge-kill", label: "Revenge Kill", icon: WarningCircle },
+      { id: "dark-rp", label: "Dark RP", icon: WarningCircle },
+      { id: "anti-rp", label: "Anti RP", icon: WarningCircle },
+      { id: "trash-rp", label: "Trash RP", icon: WarningCircle },
+      { id: "meta-gaming", label: "Meta Gaming", icon: WarningCircle },
       { id: "areas-civis", label: "Áreas Civis", icon: Shield },
+      { id: "condutas", label: "Condutas", icon: WarningCircle },
     ]
   },
   {
@@ -47,6 +63,7 @@ const sidebarGroups = [
       { id: "lojas-de-assalto", label: "Lojas de Assalto", icon: CurrencyCircleDollar },
       { id: "joalheria", label: "Joalheria", icon: CurrencyCircleDollar },
       { id: "banco", label: "Banco", icon: CurrencyCircleDollar },
+      { id: "agendamento", label: "Agendamento Banco", icon: WarningCircle },
     ]
   }
 ];
