@@ -71,7 +71,7 @@ export async function GET(
           // Registrar no financeiro automaticamente
           await query(
             `INSERT INTO finance_transactions (type, amount, description, category) VALUES (?, ?, ?, ?)`,
-            ["entrada", Number(order.final_price), `Compra Automática (#${order.code})`, "Loja Automática"]
+            ["entrada", Number(order.price), `Compra Automática (#${order.code})`, "Loja Automática"]
           );
 
           order.status = "pago";
