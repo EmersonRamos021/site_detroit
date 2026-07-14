@@ -8,7 +8,17 @@ import {
   Handshake, ListChecks, MagnifyingGlass
 } from "@phosphor-icons/react";
 import { useState, useEffect, useMemo, useRef } from "react";
-import rulesData from "./rules.json";
+
+interface RuleSection {
+  id: string;
+  title: string;
+  html: string;
+}
+
+interface RulesData {
+  title: string;
+  sections: RuleSection[];
+}
 
 // Hardcoded Sidebar Structure exactly as the GitBook screenshots
 const sidebarGroups = [
@@ -84,10 +94,23 @@ const sidebarGroups = [
   }
 ];
 
-export default function RegrasPage() {
+export default function RulesPage() {
   const [activeRule, setActiveRule] = useState("regras-basicas");
   const [searchQuery, setSearchQuery] = useState("");
+  const [rulesData, setRulesData] = useState<RulesData | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    fetch("/api/rules")
+      .then(res => res.json())
+      .then(data => {
+        setRulesData(data);
+        if (data?.sections?.length > 0 && activeRule === "regras-basicas") {
+          setActiveRule(data.sections[0].id);
+        }
+      })
+      .catch(err => console.error("Erro ao carregar regras:", err));
+  }, []);
   
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     "regras-basicas": true,
@@ -162,6 +185,7 @@ export default function RegrasPage() {
 
   // Pre-processamento da pesquisa para não travar
   const searchIndex = useMemo(() => {
+    if (!rulesData) return [];
     return rulesData.sections.map((section: any) => {
       let plainText = "";
       if (typeof window !== 'undefined') {
@@ -176,7 +200,7 @@ export default function RegrasPage() {
         searchableText: (section.title + " " + plainText).toLowerCase()
       };
     });
-  }, []);
+  }, [rulesData]);
 
   const searchResults = searchQuery.length >= 2 ? searchIndex.filter((section: any) => {
     return section.searchableText.includes(searchQuery.toLowerCase());
@@ -189,10 +213,18 @@ export default function RegrasPage() {
   }) : [];
 
   // Encontra os dados da regra atual baseada no ID
-  const currentRuleData = rulesData.sections.find((s: any) => s.id === activeRule) || {
+  const currentRuleData = rulesData?.sections.find((s: any) => s.id === activeRule) || {
     title: "Em Desenvolvimento",
     html: "<p>Esta seção ainda está sendo migrada ou desenvolvida.</p>"
   };
+
+  if (!rulesData) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center pt-20">
+        <div className="animate-pulse text-zinc-500">Carregando regulamento...</div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#111111] flex flex-col pt-24 pb-8">
