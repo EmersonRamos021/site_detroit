@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import { getPaymentStatus } from "@/lib/mercadopago";
 import { sendOrderNotification, sendPurchaseDM } from "@/lib/discord";
+import { processOrderDelivery } from "@/lib/delivery";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -159,6 +160,9 @@ export async function POST(request: Request) {
       couponCode: order.coupon_code,
       expiresAt: null,
     }, "pago");
+
+    // Entrega Automática
+    await processOrderDelivery(order.code, order.user_discord_id, items);
 
     return Response.json({ received: true, paid: true, orderCode: order.code });
   } catch (error) {

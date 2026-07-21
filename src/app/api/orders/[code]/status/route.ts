@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { query } from "@/lib/db";
 import { getPaymentStatus } from "@/lib/mercadopago";
 import { sendOrderNotification, sendPurchaseDM } from "@/lib/discord";
+import { processOrderDelivery } from "@/lib/delivery";
 
 export const dynamic = "force-dynamic";
 
@@ -98,6 +99,16 @@ export async function GET(
             couponCode: order.coupon_code,
             expiresAt: null,
           }, "pago");
+
+          // Entregar VIPs caso existam
+          const items = await query<{ quantity: number; title: string; in_game_command: string | null }>(
+            `SELECT oi.quantity, p.title, p.in_game_command 
+             FROM order_items oi
+             INNER JOIN products p ON oi.product_id = p.id
+             WHERE oi.order_id = ?`,
+            [order.id]
+          );
+          await processOrderDelivery(order.code, order.user_discord_id, items);
         }
       } catch {
         // Ignorar falhas na consulta ao MP, o webhook pode entregar depois
