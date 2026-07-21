@@ -1,6 +1,6 @@
 import { query } from "./db";
 
-// Mapeamento de TÌtulos de Produtos para IDs de Cargos VIP no Discord
+// Mapeamento de T√≠tulos de Produtos para IDs de Cargos VIP no Discord
 const VIP_ROLES: Record<string, string> = {
   "Vip Basic": "1446913369625071858",
   "Vip Eclipse": "1446907908724887685",
@@ -22,7 +22,7 @@ export async function processOrderDelivery(
   const GUILD_ID = "1446901495197995160";
 
   for (const item of items) {
-    // Identificar se o produto È um VIP
+    // Identificar se o produto √© um VIP
     let roleIdToGive: string | null = null;
     
     for (const [vipName, roleId] of Object.entries(VIP_ROLES)) {
@@ -34,41 +34,41 @@ export async function processOrderDelivery(
 
     // Se for um VIP reconhecido
     if (roleIdToGive) {
-      console.log("[DELIVERY] Entregando VIP: ${item.title} (Role ID: ${roleIdToGive}) para o usu·rio ${discordId}");
+      console.log(`[DELIVERY] Entregando VIP: ${item.title} (Role ID: ${roleIdToGive}) para o usu√°rio ${discordId}`);
 
       // 1. Tentar dar o cargo no Discord via API
       if (BOT_TOKEN) {
         try {
-          const res = await fetch("https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}/roles/${roleIdToGive}", {
+          const res = await fetch(`https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}/roles/${roleIdToGive}`, {
             method: "PUT",
             headers: {
-              Authorization: "Bot ${BOT_TOKEN}",
+              Authorization: `Bot ${BOT_TOKEN}`,
             },
           });
 
           if (!res.ok) {
             const err = await res.text();
-            console.error("[DELIVERY] Erro ao entregar cargo no Discord (${res.status}):", err);
+            console.error(`[DELIVERY] Erro ao entregar cargo no Discord (${res.status}):`, err);
           } else {
-            console.log("[DELIVERY] Cargo entregue no Discord com sucesso!");
+            console.log(`[DELIVERY] Cargo entregue no Discord com sucesso!`);
           }
         } catch (e) {
-          console.error("[DELIVERY] ExceÁ„o ao entregar cargo no Discord:", e);
+          console.error(`[DELIVERY] Exce√ß√£o ao entregar cargo no Discord:`, e);
         }
       } else {
-        console.warn("[DELIVERY] DISCORD_BOT_TOKEN ausente. N„o foi possÌvel entregar o cargo.");
+        console.warn("[DELIVERY] DISCORD_BOT_TOKEN ausente. N√£o foi poss√≠vel entregar o cargo.");
       }
 
       // 2. Salvar no banco (active_vips) para o Bot remover em 30 dias
       try {
         await query(
-          "INSERT INTO active_vips (discord_id, role_id, order_code, expires_at) 
-           VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))",
+          `INSERT INTO active_vips (discord_id, role_id, order_code, expires_at) 
+           VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))`,
           [discordId, roleIdToGive, orderCode]
         );
-        console.log("[DELIVERY] VIP registrado no banco de dados. Vencer· em 30 dias.");
+        console.log(`[DELIVERY] VIP registrado no banco de dados. Vencer√° em 30 dias.`);
       } catch (e) {
-        console.error("[DELIVERY] Erro ao salvar VIP no banco de dados:", e);
+        console.error(`[DELIVERY] Erro ao salvar VIP no banco de dados:`, e);
       }
     }
   }
