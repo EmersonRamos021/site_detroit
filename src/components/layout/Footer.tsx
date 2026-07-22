@@ -29,8 +29,8 @@ export function Footer() {
           <ul className="flex flex-col gap-2 text-sm text-zinc-400">
             <li><Link href="/" className="hover:text-[var(--color-detroit-red)] transition-colors">Início</Link></li>
             <li><Link href="#store" className="hover:text-[var(--color-detroit-red)] transition-colors">Loja</Link></li>
-            <li><Link href="#" className="hover:text-[var(--color-detroit-red)] transition-colors">Termos & Condições</Link></li>
-            <li><Link href="#" className="hover:text-[var(--color-detroit-red)] transition-colors">Política de Reembolso</Link></li>
+            <li><Link href="/termos" className="hover:text-[var(--color-detroit-red)] transition-colors">Termos & Condições</Link></li>
+            <li><Link href="/reembolso" className="hover:text-[var(--color-detroit-red)] transition-colors">Política de Reembolso</Link></li>
           </ul>
         </div>
 
