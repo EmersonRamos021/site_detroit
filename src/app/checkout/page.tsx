@@ -53,6 +53,7 @@ export default function CheckoutCartPage() {
   const [email, setEmail] = useState("");
   const [cpf, setCpf] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [refundTermsAccepted, setRefundTermsAccepted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -125,6 +126,10 @@ export default function CheckoutCartPage() {
     }
     if (!termsAccepted) {
       setMessage({ type: "error", text: "Você precisa aceitar os termos e condições." });
+      return;
+    }
+    if (!refundTermsAccepted) {
+      setMessage({ type: "error", text: "Você precisa concordar com nossa política de reembolso." });
       return;
     }
 
@@ -271,6 +276,18 @@ export default function CheckoutCartPage() {
               </div>
               <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition-colors leading-relaxed">
                 Eu aceito os <span className="font-bold text-white">termos e condições</span> desta compra e <span className="font-bold text-white">confirmo</span> que a entrega ocorrerá para o <span className="font-bold text-white">ID informado</span>.
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer group mt-2 relative z-10">
+              <div className="relative flex items-center justify-center mt-0.5">
+                <input type="checkbox" checked={refundTermsAccepted} onChange={e => setRefundTermsAccepted(e.target.checked)} className="peer appearance-none w-5 h-5 border-2 border-zinc-600 rounded bg-transparent checked:bg-[var(--color-detroit-red)] checked:border-[var(--color-detroit-red)] transition-all" />
+                <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition-colors leading-relaxed">
+                Estou ciente e concordo que <span className="font-bold text-white">NÃO fazemos devolução do dinheiro</span> e <span className="font-bold text-white">NÃO há reembolso</span> para os produtos virtuais adquiridos nesta loja, sob nenhuma hipótese.
               </span>
             </label>
 
