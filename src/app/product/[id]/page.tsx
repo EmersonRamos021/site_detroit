@@ -81,7 +81,7 @@ export default async function ProductPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* PRODUCT IMAGE */}
-          <div className="relative aspect-[4/3] w-full rounded-[2rem] overflow-hidden bg-zinc-900 border border-white/5 group">
+          <div className="relative aspect-square w-full rounded-[2rem] overflow-hidden bg-zinc-900 border border-white/5 group">
             <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-800/80 z-0" />
             {product.image_url && (
               <Image

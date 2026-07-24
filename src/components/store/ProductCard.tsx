@@ -48,7 +48,7 @@ export function ProductCard({ id, title, description, price, image, category, fe
       <div className="absolute inset-0 z-20 pointer-events-none rounded-[1.5rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" />
 
       {/* Product Image Area */}
-      <div className="relative w-full h-44 bg-zinc-800/50 overflow-hidden flex items-center justify-center">
+      <div className="relative w-full aspect-square bg-zinc-800/50 overflow-hidden flex items-center justify-center">
         {/* Placeholder gradient just in case */}
         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-800/80 z-0" />
         
