@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BuyButton } from "./BuyButton";
+import ReactMarkdown from "react-markdown";
 
 interface ProductDetail {
   id: number;
@@ -111,9 +112,29 @@ export default async function ProductPage({
               {product.title}
             </h1>
 
-            <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-[55ch]">
-              {product.description || "Entrega imediata in-game após a confirmação do pagamento."}
-            </p>
+            <div className="text-base text-zinc-400 leading-relaxed mb-8 max-w-[65ch] markdown-content">
+              {product.description ? (
+                <ReactMarkdown
+                  components={{
+                    h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-white mt-8 mb-4" {...props} />,
+                    h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-white mt-8 mb-4" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-xl font-bold text-white mt-6 mb-3" {...props} />,
+                    h4: ({node, ...props}) => <h4 className="text-lg font-bold text-white mt-6 mb-3" {...props} />,
+                    p: ({node, ...props}) => <p className="mb-4 text-zinc-400" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc list-inside mb-4 space-y-2 text-zinc-400 marker:text-[var(--color-detroit-red)]" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-4 space-y-2 text-zinc-400 marker:text-[var(--color-detroit-red)]" {...props} />,
+                    li: ({node, ...props}) => <li className="ml-4" {...props} />,
+                    strong: ({node, ...props}) => <strong className="font-bold text-zinc-200" {...props} />,
+                    hr: ({node, ...props}) => <hr className="my-6 border-white/10" {...props} />,
+                    a: ({node, ...props}) => <a className="text-[var(--color-detroit-red)] hover:underline" {...props} />,
+                  }}
+                >
+                  {product.description}
+                </ReactMarkdown>
+              ) : (
+                <p>Entrega imediata in-game após a confirmação do pagamento.</p>
+              )}
+            </div>
 
             {/* PRICE */}
             <div className="flex flex-col gap-1 mb-10">

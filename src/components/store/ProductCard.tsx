@@ -75,7 +75,7 @@ export function ProductCard({ id, title, description, price, image, category, fe
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-xl font-bold tracking-tight text-white mb-1">{title}</h3>
         <p className="text-sm font-medium text-zinc-500 mb-4 line-clamp-2">
-          {description || "Entrega imediata in-game"}
+          {description ? description.replace(/[#*_~>-]/g, '').trim() : "Entrega imediata in-game"}
         </p>
         
         <div className="mt-auto flex flex-col gap-3">
